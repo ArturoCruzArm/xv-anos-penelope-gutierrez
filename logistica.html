@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logística - XV Años de Penélope Desirée Gutiérrez</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --purple: #7c3aed;
+            --purple-light: #c4b5fd;
+            --purple-dark: #5b21b6;
+            --lavender: #ede9fe;
+            --gold: #d4af37;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; }
+
+        .header {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--purple-dark), var(--purple));
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(124,58,237,0.3);
+        }
+
+        .header h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 10px; }
+        .header p { font-size: 1.1rem; opacity: 0.9; }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            display: inline-block;
+            background: white;
+            color: var(--purple);
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: var(--purple);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--purple);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--purple-light);
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0; bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--purple), var(--purple-light));
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 15px;
+            border-left: 4px solid var(--purple);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -34px;
+            top: 25px;
+            width: 16px; height: 16px;
+            background: var(--purple);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--purple-light);
+        }
+
+        .time-badge {
+            display: inline-block;
+            background: var(--purple);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .timeline-content h3 { color: #333; margin-bottom: 10px; font-size: 1.2rem; }
+        .timeline-content p { color: #666; margin-bottom: 5px; }
+
+        .location-card {
+            background: linear-gradient(135deg, #faf5ff, #ede9fe);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border: 2px solid var(--purple-light);
+        }
+
+        .location-card h4 { color: var(--purple-dark); margin-bottom: 8px; }
+        .location-card a { color: var(--purple); text-decoration: none; font-weight: 600; }
+        .location-card a:hover { text-decoration: underline; }
+
+        .pending-notice {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            border: 2px dashed #ff9800;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            color: #e65100;
+        }
+
+        .pending-notice i { font-size: 2rem; margin-bottom: 10px; display: block; }
+
+        .checklist { list-style: none; padding: 0; }
+
+        .checklist li {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
+        }
+
+        .checklist li:hover { background: #ede9fe; transform: translateX(5px); }
+        .checklist li i { color: var(--purple); font-size: 1.2rem; flex-shrink: 0; }
+
+        .important-note {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .important-note h3 { color: #2e7d32; margin-bottom: 10px; }
+
+        .important-warning {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .important-warning h3 { color: #e65100; margin-bottom: 10px; }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .info-card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid #eee;
+            transition: all 0.3s;
+        }
+
+        .info-card:hover {
+            border-color: var(--purple-light);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        .info-card i { font-size: 2.5rem; color: var(--purple); margin-bottom: 12px; }
+        .info-card h4 { color: #333; margin-bottom: 8px; }
+        .info-card p { color: #666; font-size: 0.95rem; }
+
+        .payment-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin: 3px;
+        }
+
+        .status-paid { background: #c8e6c9; color: #2e7d32; }
+        .status-pending { background: #fff3e0; color: #e65100; }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8rem; }
+            .timeline { padding-left: 20px; }
+            .nav-links { flex-direction: column; align-items: center; }
+        }
+
+        @media print {
+            body { background: white; }
+            .nav-links { display: none; }
+            .section { box-shadow: none; border: 1px solid #ddd; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-clipboard-list"></i> Logística del Evento</h1>
+            <p>XV Años de Penélope Desirée Gutiérrez</p>
+            <p>Domingo 13 de Septiembre, 2026</p>
+        </div>
+
+        <div class="nav-links">
+            <a href="index.html"><i class="fas fa-envelope"></i> Invitación</a>
+            <a href="contrato.html"><i class="fas fa-file-contract"></i> Contrato</a>
+            <a href="logistica.html" class="active"><i class="fas fa-clipboard-list"></i> Logística</a>
+            <a href="selector.html"><i class="fas fa-images"></i> Fotos</a>
+        </div>
+
+        <!-- Resumen del Evento -->
+        <div class="section">
+            <h2><i class="fas fa-calendar-check"></i> Resumen del Evento</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h4>Fecha</h4>
+                    <p><strong>Domingo 13 de Septiembre, 2026</strong></p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-user-graduate"></i>
+                    <h4>Quinceañera</h4>
+                    <p><strong>Penélope Desirée Gutiérrez</strong></p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <h4>Total del Paquete</h4>
+                    <p><strong>$6,740.00</strong></p>
+                    <span class="payment-status status-paid">Anticipo: $500</span>
+                    <span class="payment-status status-pending">Saldo: $6,240</span>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-camera"></i>
+                    <h4>Cobertura</h4>
+                    <p>Sesión + Misa + Fiesta</p>
+                    <p><strong>5:00 PM – 11:00 PM</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline del Día -->
+        <div class="section">
+            <h2><i class="fas fa-clock"></i> Timeline del Día del Evento</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <span class="time-badge">TBD</span>
+                    <div class="timeline-content">
+                        <h3><i class="fas fa-church"></i> Misa de Acción de Gracias</h3>
+                        <p><strong>Fecha:</strong> Domingo 13 de Septiembre, 2026</p>
+                        <p><strong>Hora:</strong> Por confirmar</p>
+                        <div class="pending-notice">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <strong>Lugar de la misa por confirmar</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <span class="time-badge">5:00 PM</span>
+                    <div class="timeline-content">
+                        <h3><i class="fas fa-glass-cheers"></i> Recepción y Fiesta</h3>
+                        <p><strong>Fecha:</strong> Domingo 13 de Septiembre, 2026</p>
+                        <p><strong>Horario:</strong> 5:00 PM – 11:00 PM</p>
+                        <div class="location-card">
+                            <h4><i class="fas fa-map-marker-alt"></i> Salones Extravaganza</h4>
+                            <p>León, Guanajuato</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <span class="time-badge">11:00 PM</span>
+                    <div class="timeline-content">
+                        <h3><i class="fas fa-moon"></i> Cierre del Evento</h3>
+                        <p>Fin de la cobertura fotográfica y de video.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sesión Fotográfica Previa -->
+        <div class="section">
+            <h2><i class="fas fa-camera-retro"></i> Sesión Fotográfica Previa</h2>
+            <div class="pending-notice">
+                <i class="fas fa-calendar-plus"></i>
+                <strong>Sesión por agendar</strong>
+                <p style="margin-top:10px;">La sesión fotográfica previa está incluida en el paquete. Coordinar fecha, hora y lugar con anticipación.</p>
+            </div>
+            <div class="important-note" style="margin-top:15px;">
+                <h3><i class="fas fa-lightbulb"></i> Recomendaciones para la Sesión</h3>
+                <ul style="margin-top:10px; padding-left:20px; color:#555;">
+                    <li>Tener el vestido completamente listo (ajustes finales)</li>
+                    <li>Todos los accesorios (tiara, aretes, collar, zapatos)</li>
+                    <li>Maquillaje y peinado profesional</li>
+                    <li>Ramo de flores (si aplica)</li>
+                    <li>Programar con tiempo suficiente</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Estado de Pagos -->
+        <div class="section">
+            <h2><i class="fas fa-tasks"></i> Estado de Pagos</h2>
+            <ul class="checklist">
+                <li>
+                    <i class="fas fa-check-circle" style="color:#4caf50;"></i>
+                    <span><strong>Anticipo:</strong> $500 — Transferencia recibida el 27 de marzo de 2026</span>
+                </li>
+                <li>
+                    <i class="fas fa-clock" style="color:#ff9800;"></i>
+                    <span><strong>Saldo Restante:</strong> $6,240 — Liquidar antes o el día del evento</span>
+                </li>
+            </ul>
+            <div class="important-warning">
+                <h3><i class="fas fa-exclamation-triangle"></i> Recuerda</h3>
+                <p>El saldo debe liquidarse <strong>antes o el día del evento</strong> para confirmar todos los servicios. El anticipo es <strong>no reembolsable</strong> en caso de cancelación.</p>
+            </div>
+        </div>
+
+        <!-- Información Pendiente -->
+        <div class="section">
+            <h2><i class="fas fa-clipboard-check"></i> Información Pendiente</h2>
+            <p style="margin-bottom:15px; color:#666;">Los siguientes datos son necesarios para completar la logística del evento:</p>
+            <ul class="checklist">
+                <li>
+                    <i class="fas fa-clock" style="color:#ff9800;"></i>
+                    <span><strong>Lugar y hora de la misa</strong> — Por confirmar</span>
+                </li>
+                <li>
+                    <i class="fas fa-clock" style="color:#ff9800;"></i>
+                    <span><strong>Padrinos y madrinas</strong> — Por confirmar</span>
+                </li>
+                <li>
+                    <i class="fas fa-clock" style="color:#ff9800;"></i>
+                    <span><strong>Protocolo del salón</strong> — Vals, brindis, pastel, etc.</span>
+                </li>
+                <li>
+                    <i class="fas fa-clock" style="color:#ff9800;"></i>
+                    <span><strong>DJ / Música en vivo</strong> — Por confirmar</span>
+                </li>
+                <li>
+                    <i class="fas fa-clock" style="color:#ff9800;"></i>
+                    <span><strong>Sesión fotográfica previa</strong> — Fecha y lugar por agendar</span>
+                </li>
+                <li>
+                    <i class="fas fa-clock" style="color:#ff9800;"></i>
+                    <span><strong>Fotos de Penélope desde niña</strong> — Para el videoclip de recuerdo</span>
+                </li>
+                <li>
+                    <i class="fas fa-check-circle" style="color:#4caf50;"></i>
+                    <span><s>Salón para la recepción</s> — <strong>Salones Extravaganza, 5:00–11:00 PM</strong></span>
+                </li>
+                <li>
+                    <i class="fas fa-check-circle" style="color:#4caf50;"></i>
+                    <span><s>Fecha del evento</s> — <strong>Domingo 13 de Septiembre, 2026</strong></span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Paquete Contratado -->
+        <div class="section">
+            <h2><i class="fas fa-box-open"></i> Paquete Contratado</h2>
+            <p style="color:#666; margin-bottom:15px;"><strong>Paquete 2 — Fotografía y Video $6,500</strong> + Adicionales</p>
+            <ul class="checklist">
+                <li><i class="fas fa-images"></i><span>100 fotos impresas tamaño 5x7"</span></li>
+                <li><i class="fas fa-film"></i><span>Película USB editada, musicalizada y titulada</span></li>
+                <li><i class="fas fa-video"></i><span>Videoclip para proyectar en el salón (sesión previa + fotos)</span></li>
+                <li><i class="fas fa-box"></i><span>Caja impresa para la USB</span></li>
+                <li><i class="fas fa-portrait"></i><span>Foto ampliada 50x60 cm con marco</span></li>
+                <li><i class="fas fa-archive"></i><span>Caja impresa para las fotografías</span></li>
+                <li><i class="fas fa-camera"></i><span>Sesión fotográfica previa al evento</span></li>
+                <li><i class="fas fa-helicopter"></i><span>Tomas de Dron — $120</span></li>
+                <li><i class="fas fa-globe"></i><span>Invitaciones Web — $120</span></li>
+            </ul>
+            <div class="important-note" style="margin-top:15px;">
+                <h3><i class="fas fa-star"></i> Opcional Disponible</h3>
+                <p><strong>Fotolibro 12x24"</strong> con fotolibro de bolsillo — <strong>$1,500</strong> adicionales.<br>
+                Sustituye las 100 fotos tradicionales impresas. Consultar disponibilidad.</p>
+            </div>
+        </div>
+
+        <!-- Contacto -->
+        <div class="section">
+            <h2><i class="fas fa-phone-alt"></i> Contacto</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <i class="fab fa-whatsapp"></i>
+                    <h4>Cliente — Luis Gutiérrez</h4>
+                    <p><a href="https://wa.me/524775629388" target="_blank" style="color:var(--purple); text-decoration:none;">477-562-9388</a></p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-camera"></i>
+                    <h4>Producciones Foro 7</h4>
+                    <p>Fotografía · Video · Dron · Invitaciones Web</p>
+                    <p><a href="https://wa.me/524779203776" target="_blank" style="color:var(--purple); text-decoration:none;">477-920-3776</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

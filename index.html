@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Invitación a los XV años de Penélope Desirée Gutiérrez - 13 de septiembre de 2026">
+    <meta name="theme-color" content="#7c3aed">
+    <title>XV Años - Penélope Desirée Gutiérrez</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;600;700&family=Playfair+Display:wght@400;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --purple: #7c3aed;
+            --purple-light: #c4b5fd;
+            --purple-dark: #5b21b6;
+            --purple-darker: #3b0764;
+            --lavender: #ede9fe;
+            --gold: #d4af37;
+            --gold-light: #f4d03f;
+            --cream: #faf8ff;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: linear-gradient(135deg, var(--purple-darker) 0%, var(--purple-dark) 40%, var(--purple) 100%);
+            color: var(--cream);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                radial-gradient(circle at 20% 20%, rgba(196, 181, 253, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(212, 175, 55, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+
+        .crown {
+            font-size: 4rem;
+            animation: float 3s ease-in-out infinite;
+            display: inline-block;
+            filter: drop-shadow(0 0 20px var(--gold));
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .main-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 8vw, 4rem);
+            font-weight: 900;
+            color: var(--gold);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            margin: 20px 0;
+            letter-spacing: 8px;
+        }
+
+        .quinceañera-name {
+            font-family: 'Great Vibes', cursive;
+            font-size: clamp(3rem, 10vw, 6rem);
+            color: var(--gold-light);
+            text-shadow: 0 4px 20px rgba(212, 175, 55, 0.6);
+            margin: 20px 0;
+            line-height: 1.2;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 4px 20px rgba(212, 175, 55, 0.5); }
+            to { text-shadow: 0 4px 40px rgba(212, 175, 55, 0.9); }
+        }
+
+        .divider {
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 30px auto;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '❖';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--purple-dark);
+            color: var(--gold);
+            font-size: 1.5rem;
+            padding: 0 10px;
+        }
+
+        section {
+            background: rgba(255,255,255,0.07);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px 30px;
+            margin: 30px 0;
+            border: 1px solid rgba(196, 181, 253, 0.25);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            color: var(--gold);
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: var(--gold);
+        }
+
+        .quote {
+            text-align: center;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            font-style: italic;
+            color: var(--purple-light);
+            margin: 40px 0;
+            padding: 30px;
+            border-left: 3px solid var(--gold);
+            border-right: 3px solid var(--gold);
+        }
+
+        .countdown {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 40px 0;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .countdown-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px 15px;
+            text-align: center;
+            border: 2px solid var(--gold);
+        }
+
+        .countdown-value {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            color: var(--gold-light);
+            display: block;
+        }
+
+        .countdown-label {
+            font-size: 0.9rem;
+            color: var(--cream);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+
+        .event-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .event-card {
+            background: linear-gradient(135deg, rgba(196,181,253,0.15), rgba(196,181,253,0.05));
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid var(--gold);
+            text-align: center;
+        }
+
+        .event-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .event-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .event-info {
+            color: var(--cream);
+            margin: 10px 0;
+            font-size: 1.05rem;
+        }
+
+        .event-info strong {
+            color: var(--gold-light);
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .pending-info {
+            background: rgba(255,193,7,0.15);
+            border: 2px dashed var(--gold);
+            border-radius: 10px;
+            padding: 18px;
+            text-align: center;
+            color: var(--gold-light);
+            font-style: italic;
+            margin-top: 15px;
+        }
+
+        .family-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid rgba(196,181,253,0.3);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .family-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .family-role {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--gold);
+            margin-bottom: 12px;
+        }
+
+        .family-names {
+            font-size: 1.15rem;
+            color: var(--cream);
+            line-height: 1.8;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            margin: 8px;
+            background: linear-gradient(135deg, var(--gold), #b8941f);
+            color: var(--purple-darker);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(212,175,55,0.4);
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212,175,55,0.6);
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .nav-links a {
+            display: inline-block;
+            background: rgba(255,255,255,0.1);
+            color: var(--gold);
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: 2px solid var(--gold);
+            font-weight: 600;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: var(--gold);
+            color: var(--purple-darker);
+            transform: translateY(-2px);
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .social-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: var(--gold);
+            color: var(--purple-darker);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212,175,55,0.4);
+        }
+
+        .social-icon:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 6px 20px rgba(212,175,55,0.6);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+            border-top: 2px solid rgba(196,181,253,0.3);
+        }
+
+        footer p { color: var(--gold); margin: 8px 0; }
+
+        .floating-element {
+            position: fixed;
+            font-size: 2rem;
+            opacity: 0.2;
+            pointer-events: none;
+            animation: floatElement 18s infinite ease-in-out;
+        }
+
+        @keyframes floatElement {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.2; }
+            90% { opacity: 0.2; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .countdown { grid-template-columns: repeat(2, 1fr); }
+            .event-details { grid-template-columns: 1fr; }
+            section { padding: 30px 20px; }
+            .nav-links { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-element" style="left:8%; animation-delay:0s;">✨</div>
+    <div class="floating-element" style="left:28%; animation-delay:4s;">🌸</div>
+    <div class="floating-element" style="left:52%; animation-delay:8s;">💜</div>
+    <div class="floating-element" style="left:72%; animation-delay:12s;">🌸</div>
+    <div class="floating-element" style="left:90%; animation-delay:16s;">✨</div>
+
+    <div class="container">
+        <header>
+            <div class="crown">👑</div>
+            <h1 class="main-title">MIS XV AÑOS</h1>
+            <h2 class="quinceañera-name">Penélope Desirée</h2>
+            <div class="divider"></div>
+            <p style="font-family:'Cormorant Garamond',serif; font-size:1.3rem; color:var(--purple-light); letter-spacing:2px;">Gutiérrez</p>
+        </header>
+
+        <div class="nav-links">
+            <a href="index.html" class="active"><i class="fas fa-envelope"></i> Invitación</a>
+            <a href="contrato.html"><i class="fas fa-file-contract"></i> Contrato</a>
+            <a href="logistica.html"><i class="fas fa-clipboard-list"></i> Logística</a>
+            <a href="selector.html"><i class="fas fa-images"></i> Fotos</a>
+        </div>
+
+        <div class="quote">
+            "Hoy dejo atrás mi niñez y comienzo un nuevo sueño lleno de ilusiones y esperanzas.<br>
+            Te invito a compartir este momento mágico conmigo."
+        </div>
+
+        <!-- Cuenta Regresiva -->
+        <section>
+            <h2 class="section-title"><i class="fas fa-clock"></i> Cuenta Regresiva</h2>
+            <div class="countdown" id="countdown">
+                <div class="countdown-item">
+                    <span class="countdown-value" id="days">00</span>
+                    <span class="countdown-label">Días</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-value" id="hours">00</span>
+                    <span class="countdown-label">Horas</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-value" id="minutes">00</span>
+                    <span class="countdown-label">Minutos</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-value" id="seconds">00</span>
+                    <span class="countdown-label">Segundos</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mis Papás -->
+        <section>
+            <h2 class="section-title"><i class="fas fa-users"></i> Con la Bendición de</h2>
+            <div class="family-card">
+                <div class="family-icon">💜</div>
+                <div class="family-role">Mis Padres</div>
+                <div class="family-names">Luis Gutiérrez</div>
+            </div>
+        </section>
+
+        <!-- Detalles del Evento -->
+        <section>
+            <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> Detalles del Evento</h2>
+            <div class="event-details">
+                <!-- Misa -->
+                <div class="event-card">
+                    <span class="event-icon">⛪</span>
+                    <h3 class="event-title">Misa de Acción de Gracias</h3>
+                    <div class="event-info">
+                        <strong><i class="fas fa-calendar-alt"></i> Fecha</strong>
+                        Domingo, 13 de Septiembre de 2026
+                    </div>
+                    <div class="pending-info">
+                        <i class="fas fa-clock"></i> Lugar por confirmar
+                    </div>
+                </div>
+
+                <!-- Fiesta -->
+                <div class="event-card">
+                    <span class="event-icon">🎊</span>
+                    <h3 class="event-title">Recepción y Fiesta</h3>
+                    <div class="event-info">
+                        <strong><i class="fas fa-calendar-alt"></i> Fecha</strong>
+                        Domingo, 13 de Septiembre de 2026
+                    </div>
+                    <div class="event-info">
+                        <strong><i class="fas fa-clock"></i> Horario</strong>
+                        5:00 PM – 11:00 PM
+                    </div>
+                    <div class="event-info">
+                        <strong><i class="fas fa-map-marker-alt"></i> Salón</strong>
+                        Salones Extravaganza<br>León, Guanajuato
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Código de Vestimenta -->
+        <section>
+            <h2 class="section-title"><i class="fas fa-tshirt"></i> Código de Vestimenta</h2>
+            <div style="text-align:center; padding:30px; background:linear-gradient(135deg,rgba(196,181,253,0.2),rgba(196,181,253,0.05)); border-radius:15px;">
+                <p style="font-size:3.5rem; margin-bottom:15px;">👔 👗</p>
+                <p style="font-size:1.4rem; color:var(--gold-light); font-weight:600; letter-spacing:2px;">FORMAL / ELEGANTE</p>
+                <p style="margin-top:15px; color:var(--cream);">Te pedimos asistir con vestimenta formal para hacer de esta noche una ocasión especial</p>
+            </div>
+        </section>
+
+        <!-- Compartir -->
+        <section style="text-align:center;">
+            <h2 class="section-title"><i class="fas fa-share-alt"></i> Comparte</h2>
+            <p style="margin-bottom:20px; color:var(--cream);">Ayúdame a compartir esta invitación con tus amigos y familiares</p>
+            <div class="social-icons">
+                <a href="#" onclick="shareWhatsApp()" class="social-icon" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a href="#" onclick="shareFacebook()" class="social-icon" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" onclick="copyLink()" class="social-icon" title="Copiar enlace"><i class="fas fa-link"></i></a>
+            </div>
+        </section>
+
+        <footer>
+            <p style="font-size:1.2rem; margin-bottom:15px;">✨ ¡Nos vemos el 13 de septiembre! ✨</p>
+            <div class="divider" style="margin:20px auto;"></div>
+            <p>Producciones Foro 7</p>
+            <p>Fotografía · Video · Dron · Invitaciones Web</p>
+            <p><i class="fas fa-phone-alt"></i> 477-920-3776</p>
+            <p style="margin-top:20px; font-size:0.9rem; opacity:0.6;">© 2026 — Penélope Desirée Gutiérrez XV Años</p>
+        </footer>
+    </div>
+
+    <script>
+        function updateCountdown() {
+            const eventDate = new Date(2026, 8, 13, 17, 0, 0).getTime(); // Septiembre = 8 (0-indexed)
+            const now = new Date().getTime();
+            const distance = eventDate - now;
+
+            if (distance < 0) {
+                document.getElementById('countdown').innerHTML = '<p style="text-align:center;font-size:1.5rem;color:var(--gold);">¡El gran día ha llegado!</p>';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = String(days).padStart(2, '0');
+            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        function shareWhatsApp() {
+            const text = '¡Estás invitado a los XV años de Penélope Desirée Gutiérrez! — Domingo 13 de Septiembre de 2026';
+            const url = window.location.href;
+            window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + url), '_blank');
+        }
+
+        function shareFacebook() {
+            const url = window.location.href;
+            window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), '_blank');
+        }
+
+        function copyLink() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('¡Enlace copiado al portapapeles!');
+            }).catch(() => {
+                prompt('Copia este enlace:', url);
+            });
+        }
+    </script>
+</body>
+</html>
