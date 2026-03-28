@@ -11,7 +11,8 @@ self.addEventListener('install', event => {
                 './logistica.html',
                 './css/selector.css',
                 './js/selector.js',
-                './favicon.svg'
+                './favicon.svg',
+                './penelope.png'
             ])
         )
     );

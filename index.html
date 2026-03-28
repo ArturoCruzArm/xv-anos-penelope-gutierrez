@@ -407,6 +407,35 @@
         100% { opacity: 0; transform: translateY(-120vh) rotate(360deg); }
     }
 
+    /* ─── Hero photo ─────────────────────────────────────────── */
+    .hero-photo-wrap {
+        margin: 20px auto 10px;
+        width: clamp(160px, 42vw, 260px);
+        height: clamp(160px, 42vw, 260px);
+        border-radius: 50%;
+        padding: 5px;
+        background: linear-gradient(135deg, var(--gold), var(--purple-light), var(--gold));
+        box-shadow:
+            0 0 0 4px rgba(212,175,55,0.25),
+            0 12px 40px rgba(0,0,0,0.4),
+            0 0 60px rgba(212,175,55,0.2);
+        animation: photo-glow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes photo-glow {
+        from { box-shadow: 0 0 0 4px rgba(212,175,55,0.2), 0 12px 40px rgba(0,0,0,0.4), 0 0 40px rgba(212,175,55,0.15); }
+        to   { box-shadow: 0 0 0 6px rgba(212,175,55,0.5), 0 12px 50px rgba(0,0,0,0.4), 0 0 80px rgba(212,175,55,0.35); }
+    }
+
+    .hero-photo {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        object-position: top center;
+        display: block;
+    }
+
     /* ─── Header ─────────────────────────────────────────────── */
     header {
         text-align: center;
@@ -956,6 +985,9 @@
 
         <header>
             <div class="crown" aria-hidden="true">👑</div>
+            <div class="hero-photo-wrap">
+                <img src="penelope.png" alt="Penélope Desirée Gutiérrez" class="hero-photo" loading="eager">
+            </div>
             <h1 class="main-title">MIS XV AÑOS</h1>
             <h2 class="quinceañera-name">Penélope Desirée</h2>
             <p class="last-name">Gutiérrez</p>
@@ -995,8 +1027,11 @@
             <h2 class="section-title">Con la Bendición de</h2>
             <div class="family-card">
                 <div class="family-icon" aria-hidden="true">💜</div>
-                <div class="family-role">Mis Padres</div>
-                <div class="family-names">Luis Gutiérrez</div>
+                <div class="family-role">Con la bendición de mis padres</div>
+                <div class="family-names">
+                    Luis Alberto Gutiérrez Simota<br>
+                    &amp; Fátima Miroslava Hernández Mendoza
+                </div>
             </div>
         </section>
 
