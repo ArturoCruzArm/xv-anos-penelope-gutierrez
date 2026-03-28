@@ -160,10 +160,22 @@ async function sbSyncSelections() {
     });
 }
 
-function clearAllSelections() {
+async function clearAllSelections() {
     if (confirm('¿Estás seguro de que quieres borrar TODAS las selecciones? Esta acción no se puede deshacer.')) {
+        // Borrar de Supabase primero
+        if (sbDisponible) {
+            try {
+                const evento_id = await sbGetEventoId();
+                if (evento_id) {
+                    await fetch(
+                        `${SUPABASE_URL}/rest/v1/selecciones?evento_id=eq.${evento_id}&session_id=eq.${SESSION_ID}`,
+                        { method: 'DELETE', headers: SB_HEADERS }
+                    );
+                }
+            } catch(e) { console.warn('[Supabase] Error al borrar:', e.message); }
+        }
         photoSelections = {};
-        saveSelections();
+        try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
         renderGallery();
         setupLazyLoad();
         updateStats();
