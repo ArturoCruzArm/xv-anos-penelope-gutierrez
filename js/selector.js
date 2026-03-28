@@ -43,15 +43,26 @@ const photos = [
     'https://raw.githubusercontent.com/ArturoCruzArm/xv-anos-penelope-gutierrez/master/penelope.png'
 ];
 
+// ── Configuración del evento (único lugar para cambiar datos del contrato) ──
+const CONFIG = {
+    slug:               'xv-anos-penelope-gutierrez',
+    nombre:             'Penélope Desirée Gutiérrez',
+    telefono:           '524775629388',
+    fechaEvento:        new Date(2026, 8, 13, 17, 0, 0),
+    limiteImpresion:    100,
+    limiteInvitacion:   null,
+    costoFotoAdicional: 15,   // MXN por foto adicional sobre el límite
+};
+
 const STORAGE_KEY = 'xv_anos_penelope_gutierrez_photo_selections';
 const KEY_FILTER   = 'penelope_filter';
 const KEY_SCROLL   = 'penelope_scroll';
 const KEY_LAST     = 'penelope_last_photo';
 const LIMITES = {
-    impresion: 100,
-    invitacion: null
+    impresion: CONFIG.limiteImpresion,
+    invitacion: CONFIG.limiteInvitacion
 };
-const COSTO_FOTO_ADICIONAL = 15; // $15 MXN por foto adicional
+const COSTO_FOTO_ADICIONAL = CONFIG.costoFotoAdicional;
 
 let photoSelections = {};
 let currentPhotoIndex = null;
