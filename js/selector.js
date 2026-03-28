@@ -90,32 +90,30 @@ async function loadSelections() {
         if (!evento_id) { sbDisponible = false; return; }
 
         const r = await fetch(
-            `${SUPABASE_URL}/rest/v1/selecciones?evento_id=eq.${evento_id}&session_id=eq.${SESSION_ID}&select=foto_index,impresion,invitacion,descartada`,
+            `${SUPABASE_URL}/rest/v1/selecciones?evento_id=eq.${evento_id}&select=foto_index,impresion,invitacion,descartada`,
             { headers: SB_HEADERS }
         );
         if (!r.ok) throw new Error(r.status);
         const rows = await r.json();
 
-        if (rows.length > 0) {
-            const sbSelections = {};
-            rows.forEach(row => {
-                if (row.impresion || row.invitacion || row.descartada) {
-                    sbSelections[row.foto_index] = {
-                        impresion: row.impresion,
-                        invitacion: row.invitacion,
-                        descartada: row.descartada
-                    };
-                }
-            });
-            // Merge: local selections made during async load win over Supabase
-            const merged = {...sbSelections};
-            Object.entries(photoSelections).forEach(([idx, sel]) => {
-                if (sel.impresion || sel.invitacion || sel.descartada) merged[idx] = sel;
-            });
-            photoSelections = merged;
-            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(photoSelections)); } catch(e) {}
-            renderGallery(); setupLazyLoad(); updateStats(); updateFilterButtons();
-        }
+        const sbSelections = {};
+        rows.forEach(row => {
+            if (row.impresion || row.invitacion || row.descartada) {
+                sbSelections[row.foto_index] = {
+                    impresion: row.impresion,
+                    invitacion: row.invitacion,
+                    descartada: row.descartada
+                };
+            }
+        });
+        // Merge: local selections no sincronizadas ganan sobre Supabase
+        const merged = {...sbSelections};
+        Object.entries(photoSelections).forEach(([idx, sel]) => {
+            if (sel.impresion || sel.invitacion || sel.descartada) merged[idx] = sel;
+        });
+        photoSelections = merged;
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(photoSelections)); } catch(e) {}
+        renderGallery(); setupLazyLoad(); updateStats(); updateFilterButtons();
 
         sbRegistrarVisita('selector');
     } catch(e) {
@@ -153,7 +151,7 @@ async function sbSyncSelections() {
 
     if (rows.length === 0) return;
 
-    await fetch(`${SUPABASE_URL}/rest/v1/selecciones?on_conflict=evento_id,session_id,foto_index`, {
+    await fetch(`${SUPABASE_URL}/rest/v1/selecciones?on_conflict=evento_id,foto_index`, {
         method: 'POST',
         headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
         body: JSON.stringify(rows)
@@ -168,7 +166,7 @@ async function clearAllSelections() {
                 const evento_id = await sbGetEventoId();
                 if (evento_id) {
                     await fetch(
-                        `${SUPABASE_URL}/rest/v1/selecciones?evento_id=eq.${evento_id}&session_id=eq.${SESSION_ID}`,
+                        `${SUPABASE_URL}/rest/v1/selecciones?evento_id=eq.${evento_id}`,
                         { method: 'DELETE', headers: SB_HEADERS }
                     );
                 }
@@ -645,6 +643,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('btnPrevPhoto')?.addEventListener('click', () => navigatePhoto('prev'));
     document.getElementById('btnNextPhoto')?.addEventListener('click', () => navigatePhoto('next'));
+
+    // Polling: sincronizar con otros usuarios cada 30 segundos
+    if (sbDisponible) {
+        setInterval(() => { if (!modalOpen) loadSelections(); }, 30000);
+    }
 
     document.addEventListener('keydown', (e) => {
         const modal = document.getElementById('photoModal');
