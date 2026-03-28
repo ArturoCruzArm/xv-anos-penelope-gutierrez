@@ -76,14 +76,15 @@ let modalOpen = false;
 // ========================================
 // LOCAL STORAGE FUNCTIONS
 // ========================================
-async function loadSelections() {
-    // 1. Cargar localStorage inmediatamente (cero latencia)
-    try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) photoSelections = JSON.parse(saved);
-    } catch(e) { photoSelections = {}; }
+async function loadSelections(isPoll = false) {
+    if (!isPoll) {
+        // Carga inicial: mostrar localStorage de inmediato (cero latencia)
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) photoSelections = JSON.parse(saved);
+        } catch(e) { photoSelections = {}; }
+    }
 
-    // 2. Sincronizar desde Supabase en background
     if (!sbDisponible) return;
     try {
         const evento_id = await sbGetEventoId();
@@ -106,16 +107,25 @@ async function loadSelections() {
                 };
             }
         });
-        // Merge: local selections no sincronizadas ganan sobre Supabase
-        const merged = {...sbSelections};
-        Object.entries(photoSelections).forEach(([idx, sel]) => {
-            if (sel.impresion || sel.invitacion || sel.descartada) merged[idx] = sel;
-        });
-        photoSelections = merged;
+
+        if (!isPoll) {
+            // Carga inicial: merge y migrar localStorage a Supabase para que otros lo vean
+            const merged = {...sbSelections};
+            Object.entries(photoSelections).forEach(([idx, sel]) => {
+                if (sel.impresion || sel.invitacion || sel.descartada) merged[idx] = sel;
+            });
+            photoSelections = merged;
+            if (Object.keys(photoSelections).length > 0) {
+                sbSyncSelections().catch(e => console.warn('[Supabase] Migración:', e.message));
+            }
+            sbRegistrarVisita('selector');
+        } else {
+            // Polling: Supabase es la verdad compartida, reemplaza estado local
+            photoSelections = sbSelections;
+        }
+
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(photoSelections)); } catch(e) {}
         renderGallery(); setupLazyLoad(); updateStats(); updateFilterButtons();
-
-        sbRegistrarVisita('selector');
     } catch(e) {
         console.warn('[Supabase] Usando localStorage:', e.message);
         sbDisponible = false;
@@ -646,7 +656,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Polling: sincronizar con otros usuarios cada 30 segundos
     if (sbDisponible) {
-        setInterval(() => { if (!modalOpen) loadSelections(); }, 30000);
+        setInterval(() => { if (!modalOpen) loadSelections(true); }, 30000);
     }
 
     document.addEventListener('keydown', (e) => {
