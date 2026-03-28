@@ -168,6 +168,15 @@ async function sbSyncSelections() {
     });
 }
 
+async function sbDeleteSelection(foto_index) {
+    const evento_id = await sbGetEventoId();
+    if (!evento_id) return;
+    await fetch(
+        `${SUPABASE_URL}/rest/v1/selecciones?evento_id=eq.${evento_id}&foto_index=eq.${foto_index}`,
+        { method: 'DELETE', headers: SB_HEADERS }
+    );
+}
+
 async function clearAllSelections() {
     if (confirm('¿Estás seguro de que quieres borrar TODAS las selecciones? Esta acción no se puede deshacer.')) {
         // Borrar de Supabase primero
@@ -528,6 +537,7 @@ function saveModalSelection() {
         photoSelections[currentPhotoIndex] = selectedCategories;
     } else {
         delete photoSelections[currentPhotoIndex];
+        if (sbDisponible) sbDeleteSelection(currentPhotoIndex).catch(e => console.warn('[Supabase] Delete:', e.message));
     }
     saveSelections();
     updateCard(currentPhotoIndex);
