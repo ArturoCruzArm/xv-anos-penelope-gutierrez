@@ -168,6 +168,45 @@ async function sbSyncSelections() {
     });
 }
 
+function swipeSaveAndNext() {
+    if (currentPhotoIndex === null) return;
+    const selectedCategories = {};
+    let hasAnySelection = false;
+    document.querySelectorAll('.option-btn').forEach(btn => {
+        selectedCategories[btn.dataset.category] = btn.classList.contains('selected');
+        if (btn.classList.contains('selected')) hasAnySelection = true;
+    });
+    if (hasAnySelection) {
+        photoSelections[currentPhotoIndex] = selectedCategories;
+    } else {
+        const idx = currentPhotoIndex;
+        delete photoSelections[idx];
+        if (sbDisponible) sbDeleteSelection(idx).catch(e => console.warn('[Supabase] Delete:', e.message));
+    }
+    saveSelections();
+    updateCard(currentPhotoIndex);
+    updateStats();
+    updateFilterButtons();
+    navigatePhoto('next');
+    showToast('Guardado ✓', 'success');
+}
+
+function swipeClearAndNext() {
+    if (currentPhotoIndex === null) return;
+    const idx = currentPhotoIndex;
+    if (photoSelections[idx]) {
+        delete photoSelections[idx];
+        if (sbDisponible) sbDeleteSelection(idx).catch(e => console.warn('[Supabase] Delete:', e.message));
+        saveSelections();
+        updateCard(idx);
+        updateStats();
+        updateFilterButtons();
+    }
+    document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+    navigatePhoto('next');
+    showToast('Selección quitada', 'success');
+}
+
 async function sbDeleteSelection(foto_index) {
     const evento_id = await sbGetEventoId();
     if (!evento_id) return;
@@ -655,8 +694,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const deltaX = e.changedTouches[0].clientX - touchStartX;
             const deltaY = e.changedTouches[0].clientY - touchStartY;
             if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-                if (deltaX > 0) navigatePhoto('prev');
-                else navigatePhoto('next');
+                if (deltaX > 0) swipeSaveAndNext();
+                else swipeClearAndNext();
             }
         }, { passive: true });
     }
