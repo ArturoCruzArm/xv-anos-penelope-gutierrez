@@ -1,4 +1,4 @@
-const CACHE_SHELL = 'penelope-shell-v1';
+const CACHE_SHELL = 'penelope-shell-v2';
 const CACHE_IMAGES = 'penelope-images-v1';
 
 self.addEventListener('install', event => {
@@ -49,7 +49,8 @@ self.addEventListener('fetch', event => {
             fetch(event.request)
                 .then(response => {
                     if (response.ok) {
-                        caches.open(CACHE_SHELL).then(c => c.put(event.request, response.clone()));
+                        const clone = response.clone();
+                        caches.open(CACHE_SHELL).then(c => c.put(event.request, clone));
                     }
                     return response;
                 })
