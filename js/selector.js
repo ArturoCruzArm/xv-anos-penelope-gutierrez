@@ -96,11 +96,11 @@ function updateStats() {
     const extraCostDisplay = document.getElementById('extraCostDisplay');
     if (extraCostDisplay) {
         if (fotosAdicionales > 0) {
-            extraCostDisplay.classList.add('visible');
+            extraCostDisplay.style.display = 'block';
             document.getElementById('extraCostAmount').textContent = `$${costoExtra} MXN`;
             document.getElementById('extraCostDetail').textContent = `${fotosAdicionales} foto${fotosAdicionales > 1 ? 's' : ''} adicional${fotosAdicionales > 1 ? 'es' : ''} x $${COSTO_FOTO_ADICIONAL}`;
         } else {
-            extraCostDisplay.classList.remove('visible');
+            extraCostDisplay.style.display = 'none';
         }
     }
 
@@ -478,7 +478,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnFilterDescartada')?.addEventListener('click', () => setFilter('descartada'));
     document.getElementById('btnFilterSinClasificar')?.addEventListener('click', () => setFilter('sin-clasificar'));
 
-    document.getElementById('btnExport')?.addEventListener('click', generateTextSummary);
+    document.getElementById('btnExport')?.addEventListener('click', () => {
+        const text = generateTextSummary();
+        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.download = 'seleccion-fotos-penelope.txt';
+        a.click();
+        URL.revokeObjectURL(url);
+    });
     document.getElementById('btnShare')?.addEventListener('click', copyToClipboard);
     document.getElementById('btnClear')?.addEventListener('click', clearAllSelections);
 

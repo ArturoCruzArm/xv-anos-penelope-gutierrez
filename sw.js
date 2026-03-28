@@ -10,7 +10,8 @@ self.addEventListener('install', event => {
                 './contrato.html',
                 './logistica.html',
                 './css/selector.css',
-                './js/selector.js'
+                './js/selector.js',
+                './favicon.svg'
             ])
         )
     );
