@@ -2,7 +2,7 @@
    VARIABLES
    ======================================== */
 :root {
-    --color-ampliacion: #8b4789;
+
     --color-impresion: #2196f3;
     --color-invitacion: #e91e63;
     --color-descartada: #f44336;
@@ -103,10 +103,6 @@ body {
     box-shadow: var(--shadow-hover);
 }
 
-.stat-card.ampliacion {
-    border-color: var(--color-ampliacion);
-    background: linear-gradient(135deg, rgba(139, 71, 137, 0.05), white);
-}
 
 .stat-card.impresion {
     border-color: var(--color-impresion);
@@ -191,10 +187,6 @@ body {
     border-color: var(--primary-color);
 }
 
-.filter-ampliacion.active {
-    background: var(--color-ampliacion);
-    border-color: var(--color-ampliacion);
-}
 
 .filter-impresion.active {
     background: var(--color-impresion);
@@ -295,9 +287,6 @@ body {
     display: none;
 }
 
-.photo-card.has-ampliacion {
-    border-color: var(--color-ampliacion);
-}
 
 .photo-card.has-impresion {
     border-color: var(--color-impresion);
@@ -413,9 +402,6 @@ body {
     color: white;
 }
 
-.badge-ampliacion {
-    background: var(--color-ampliacion);
-}
 
 .badge-impresion {
     background: var(--color-impresion);
@@ -626,10 +612,6 @@ body {
     opacity: 1;
 }
 
-.option-btn.ampliacion.selected {
-    border-color: var(--color-ampliacion);
-    background: linear-gradient(135deg, rgba(139, 71, 137, 0.1), white);
-}
 
 .option-btn.impresion.selected {
     border-color: var(--color-impresion);

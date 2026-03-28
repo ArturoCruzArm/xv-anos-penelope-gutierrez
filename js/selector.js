@@ -1,8 +1,46 @@
 // ========================================
+// SUPABASE CONFIG - XV Años Penélope Desirée
+// ========================================
+const SUPABASE_URL     = 'https://nzpujmlienzfetqcgsxz.supabase.co';
+const SUPABASE_ANON    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56cHVqbWxpZW56ZmV0cWNnc3h6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODYzMzYsImV4cCI6MjA5MDI2MjMzNn0.xl3lsb-KYj5tVLKTnzpbsdEGoV9ySnswH4eyRuyEH1s';
+const EVENTO_SLUG      = 'xv-anos-penelope-gutierrez';
+const SB_HEADERS       = { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}`, 'Content-Type': 'application/json' };
+
+function getSessionId() {
+    const KEY = 'foro7_sid';
+    let sid = localStorage.getItem(KEY);
+    if (!sid) { sid = crypto.randomUUID(); localStorage.setItem(KEY, sid); }
+    return sid;
+}
+const SESSION_ID = getSessionId();
+let eventoIdCache = null;
+let sbDisponible  = true;
+
+async function sbGetEventoId() {
+    if (eventoIdCache) return eventoIdCache;
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/eventos?slug=eq.${EVENTO_SLUG}&select=id&limit=1`, { headers: SB_HEADERS });
+    const [ev] = await r.json();
+    eventoIdCache = ev?.id || null;
+    return eventoIdCache;
+}
+
+async function sbRegistrarVisita(pagina = 'selector') {
+    try {
+        const evento_id = await sbGetEventoId();
+        if (!evento_id) return;
+        await fetch(`${SUPABASE_URL}/rest/v1/visitas`, {
+            method: 'POST',
+            headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ evento_id, pagina, session_id: SESSION_ID })
+        });
+    } catch(e) {}
+}
+
+// ========================================
 // GLOBAL VARIABLES - XV Años Penélope Desirée
 // ========================================
 const photos = [
-    // Las fotos se agregarán aquí cuando estén disponibles
+    'https://raw.githubusercontent.com/ArturoCruzArm/xv-anos-penelope-gutierrez/master/penelope.png'
 ];
 
 const STORAGE_KEY = 'xv_anos_penelope_gutierrez_photo_selections';
@@ -27,24 +65,82 @@ let modalOpen = false;
 // ========================================
 // LOCAL STORAGE FUNCTIONS
 // ========================================
-function loadSelections() {
+async function loadSelections() {
+    // 1. Cargar localStorage inmediatamente (cero latencia)
     try {
         const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            photoSelections = JSON.parse(saved);
+        if (saved) photoSelections = JSON.parse(saved);
+    } catch(e) { photoSelections = {}; }
+
+    // 2. Sincronizar desde Supabase en background
+    if (!sbDisponible) return;
+    try {
+        const evento_id = await sbGetEventoId();
+        if (!evento_id) { sbDisponible = false; return; }
+
+        const r = await fetch(
+            `${SUPABASE_URL}/rest/v1/selecciones?evento_id=eq.${evento_id}&session_id=eq.${SESSION_ID}&select=foto_index,impresion,invitacion,descartada`,
+            { headers: SB_HEADERS }
+        );
+        if (!r.ok) throw new Error(r.status);
+        const rows = await r.json();
+
+        if (rows.length > 0) {
+            const sbSelections = {};
+            rows.forEach(row => {
+                if (row.impresion || row.invitacion || row.descartada) {
+                    sbSelections[row.foto_index] = {
+                        impresion: row.impresion,
+                        invitacion: row.invitacion,
+                        descartada: row.descartada
+                    };
+                }
+            });
+            photoSelections = sbSelections;
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(photoSelections)); } catch(e) {}
+            renderGallery(); setupLazyLoad(); updateStats(); updateFilterButtons();
         }
-    } catch (error) {
-        console.error('Error cargando selecciones:', error);
-        photoSelections = {};
+
+        sbRegistrarVisita('selector');
+    } catch(e) {
+        console.warn('[Supabase] Usando localStorage:', e.message);
+        sbDisponible = false;
     }
 }
 
-function saveSelections() {
+async function saveSelections() {
+    // 1. localStorage siempre primero
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(photoSelections));
-    } catch (error) {
+    } catch(e) {
         showToast('Error al guardar. Verifica el espacio del navegador.', 'error');
     }
+
+    // 2. Sincronizar con Supabase en background (no bloqueante)
+    if (!sbDisponible) return;
+    sbSyncSelections().catch(e => { console.warn('[Supabase] Sync error:', e.message); });
+}
+
+async function sbSyncSelections() {
+    const evento_id = await sbGetEventoId();
+    if (!evento_id) return;
+
+    const rows = Object.entries(photoSelections).map(([idx, sel]) => ({
+        evento_id,
+        session_id:  SESSION_ID,
+        foto_index:  parseInt(idx),
+        impresion:   sel.impresion  || false,
+        invitacion:  sel.invitacion || false,
+        descartada:  sel.descartada || false,
+    }));
+
+    if (rows.length === 0) return;
+
+    await fetch(`${SUPABASE_URL}/rest/v1/selecciones`, {
+        method: 'POST',
+        headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify(rows)
+    });
 }
 
 function clearAllSelections() {
@@ -459,11 +555,11 @@ function showToast(message, type = 'success') {
 // EVENT LISTENERS
 // ========================================
 document.addEventListener('DOMContentLoaded', () => {
-    loadSelections();
     renderGallery();
     setupLazyLoad();
     updateStats();
     updateFilterButtons();
+    loadSelections();
 
     const savedFilter = localStorage.getItem(KEY_FILTER);
     if (savedFilter) setFilter(savedFilter);

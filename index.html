@@ -1216,12 +1216,12 @@
         if (audio.paused) {
             audio.play().catch(() => {});
             musicBtn.classList.add('playing');
-            musicIcon.className = 'fas fa-music';
+            musicIcon.className = 'fas fa-pause';
             musicBtn.setAttribute('aria-label', 'Pausar música');
         } else {
             audio.pause();
             musicBtn.classList.remove('playing');
-            musicIcon.className = 'fas fa-pause';
+            musicIcon.className = 'fas fa-music';
             musicBtn.setAttribute('aria-label', 'Reanudar música');
         }
     });

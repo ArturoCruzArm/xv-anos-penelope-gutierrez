@@ -1,4 +1,4 @@
-const CACHE_SHELL = 'penelope-shell-v2';
+const CACHE_SHELL = 'penelope-shell-v3';
 const CACHE_IMAGES = 'penelope-images-v1';
 
 self.addEventListener('install', event => {
@@ -41,7 +41,7 @@ self.addEventListener('fetch', event => {
                     return fetch(event.request).then(response => {
                         if (response.ok) cache.put(event.request, response.clone());
                         return response;
-                    }).catch(() => cached);
+                    }).catch(() => cached || new Response('', { status: 503, statusText: 'Offline' }));
                 })
             )
         );
