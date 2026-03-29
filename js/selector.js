@@ -76,6 +76,17 @@ let modalOpen = false;
 // ========================================
 // LOCAL STORAGE FUNCTIONS
 // ========================================
+function mostrarBannerSinSeleccion() {
+    if (document.getElementById('banner-sin-sel')) return;
+    if (Object.keys(photoSelections).length > 0) return;
+    if (CONFIG.fechaEvento > new Date()) return;
+    const banner = document.createElement('div');
+    banner.id = 'banner-sin-sel';
+    banner.style.cssText = 'background:#78350f;color:#fcd34d;text-align:center;padding:12px 20px;font-size:.88rem;position:sticky;top:0;z-index:200;line-height:1.5;';
+    banner.innerHTML = '📸 <strong>¡Tus fotos están listas!</strong> Aún no has seleccionado ninguna foto. ¡Empieza ahora! <button onclick="this.parentElement.remove()" style="margin-left:12px;background:transparent;border:1px solid #fcd34d;color:#fcd34d;padding:1px 8px;border-radius:4px;cursor:pointer;font-size:.85rem;">×</button>';
+    document.body.insertBefore(banner, document.body.firstChild);
+}
+
 async function loadSelections(isPoll = false) {
     if (!isPoll) {
         // Carga inicial: mostrar localStorage de inmediato (cero latencia)
@@ -119,6 +130,7 @@ async function loadSelections(isPoll = false) {
                 sbSyncSelections().catch(e => console.warn('[Supabase] Migración:', e.message));
             }
             sbRegistrarVisita('selector');
+            mostrarBannerSinSeleccion();
         } else {
             // Polling: Supabase es la verdad compartida, reemplaza estado local
             photoSelections = sbSelections;
