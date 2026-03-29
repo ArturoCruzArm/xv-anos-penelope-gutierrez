@@ -40,13 +40,14 @@
                 }).catch(() => {});
             }
 
-            // Count visits to this page
+            // Count visits to this page using HEAD + Prefer:count=exact
             const cr = await fetch(
-                `${SUPABASE_URL}/rest/v1/visitas?evento_id=eq.${evento_id}&pagina=eq.${pagina}&select=id`,
-                { headers: { ...SB_H, 'Prefer': 'count=exact', 'Range': '0-0' } }
+                `${SUPABASE_URL}/rest/v1/visitas?evento_id=eq.${evento_id}&pagina=eq.${pagina}`,
+                { method: 'HEAD', headers: { ...SB_H, 'Prefer': 'count=exact' } }
             );
             const range = cr.headers.get('Content-Range');
-            const count = range ? (range.split('/')[1] ?? '?') : '?';
+            // Content-Range: */N  (HEAD con count=exact)
+            const count = range ? (range.split('/')[1] ?? '0') : '0';
             widget.textContent = `👁 ${Number(count).toLocaleString('es-MX')}`;
         } catch (e) {
             widget.remove();
