@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Invitados - XV Años Penélope Desirée Gutiérrez</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/servicios.css">
+    <link rel="stylesheet" href="css/invitados.css">
+</head>
+<body>
+    <div class="admin-container">
+        <a href="contrato.html" class="btn-back"><i class="fas fa-arrow-left"></i> Volver al Contrato</a>
+        <header class="service-header" style="background: linear-gradient(135deg, #55efc4, #00b894);">
+            <div class="service-icon"><i class="fas fa-users"></i></div>
+            <h1>Gestion de Invitados</h1>
+            <p>XV Años Penélope Desirée Gutiérrez</p>
+        </header>
+        <section class="service-section">
+            <h2><i class="fas fa-chart-bar"></i> Resumen de Invitados</h2>
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#6c5ce7"><i class="fas fa-users"></i></div>
+                    <div class="stat-info"><h3>Total Invitados</h3><p class="stat-value" id="totalInvitados">0</p><small style="color:#999" id="totalPases">0 pases</small></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#00b894"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-info"><h3>Confirmados</h3><p class="stat-value" id="confirmados">0</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#0984e3"><i class="fas fa-user-check"></i></div>
+                    <div class="stat-info"><h3>Total Asistentes</h3><p class="stat-value" id="totalAsistentes">0</p><small style="color:#999">personas confirmadas</small></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#fdcb6e"><i class="fas fa-clock"></i></div>
+                    <div class="stat-info"><h3>Sin Respuesta</h3><p class="stat-value" id="pendientes">0</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#d63031"><i class="fas fa-times-circle"></i></div>
+                    <div class="stat-info"><h3>Declinados</h3><p class="stat-value" id="noAsistiran">0</p></div>
+                </div>
+            </div>
+        </section>
+        <section class="service-section">
+            <div class="filters-bar">
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Buscar invitado..."></div>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">Todos</button>
+                    <button class="filter-btn" data-filter="pendiente">Pendiente</button>
+                    <button class="filter-btn" data-filter="enviada">Enviada</button>
+                    <button class="filter-btn" data-filter="vista">Vista</button>
+                    <button class="filter-btn" data-filter="confirmada">Confirmada</button>
+                    <button class="filter-btn" data-filter="declinada">Declinada</button>
+                </div>
+                <button class="btn-add-guest" onclick="openAddGuestModal()"><i class="fas fa-plus"></i> Agregar Invitado</button>
+            </div>
+        </section>
+        <section class="service-section">
+            <h2><i class="fas fa-list"></i> Lista de Invitados</h2>
+            <div class="table-container">
+                <table class="guests-table" id="guestsTable">
+                    <thead><tr>
+                        <th>Nombre</th><th>Categoria</th>
+                        <th style="text-align:center">Pases</th><th style="text-align:center">Conf.</th>
+                        <th>Mesa</th><th>Status</th><th>Envio / Confirmacion</th>
+                        <th>WhatsApp / Link</th><th>Acciones</th>
+                    </tr></thead>
+                    <tbody id="guestsTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+        <section class="service-section">
+            <h2><i class="fas fa-chart-pie"></i> Distribucion por Categoria</h2>
+            <div class="category-cards">
+                <div class="category-card"><div class="category-icon" style="background:#e056fd"><i class="fas fa-home"></i></div><h4>Familia</h4><p class="category-count" id="catFamilia">0</p></div>
+                <div class="category-card"><div class="category-icon" style="background:#f39c12"><i class="fas fa-heart"></i></div><h4>Padrinos</h4><p class="category-count" id="catPadrinos">0</p></div>
+                <div class="category-card"><div class="category-icon" style="background:#3498db"><i class="fas fa-user-friends"></i></div><h4>Amigos</h4><p class="category-count" id="catAmigos">0</p></div>
+                <div class="category-card"><div class="category-icon" style="background:#1abc9c"><i class="fas fa-users"></i></div><h4>Conocidos</h4><p class="category-count" id="catConocidos">0</p></div>
+            </div>
+        </section>
+        <section class="service-section">
+            <h2><i class="fas fa-download"></i> Exportar Datos</h2>
+            <div class="export-buttons">
+                <button class="btn-export" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Exportar a Excel</button>
+                <button class="btn-export" onclick="exportToPDF()"><i class="fas fa-file-pdf"></i> Exportar a PDF</button>
+                <button class="btn-export" onclick="printList()"><i class="fas fa-print"></i> Imprimir Lista</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal Agregar/Editar Invitado -->
+    <div id="guestModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> <span id="modalTitle">Agregar Invitado</span></h2>
+                <span class="modal-close" onclick="closeGuestModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="guestForm">
+                    <div class="form-row">
+                        <div class="form-group"><label>Nombre Completo *</label><input type="text" id="guestName" required placeholder="Ej: Juan Perez"></div>
+                        <div class="form-group"><label>Telefono</label><input type="tel" id="guestPhone" placeholder="477-XXX-XXXX"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Categoria *</label>
+                            <select id="guestCategory" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="familia">Familia</option>
+                                <option value="padrinos">Padrinos</option>
+                                <option value="amigos">Amigos</option>
+                                <option value="conocidos">Conocidos</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Numero de Pases *</label><input type="number" id="guestPases" min="1" max="10" value="1" required></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Tipo de Menu</label>
+                            <select id="guestMenu">
+                                <option value="regular">Regular</option>
+                                <option value="vegetariano">Vegetariano</option>
+                                <option value="ninos">Ninos</option>
+                                <option value="especial">Especial</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Mesa Asignada</label><input type="text" id="guestTable" placeholder="Ej: Mesa 5"></div>
+                    </div>
+                    <div class="form-group"><label>Notas</label><textarea id="guestNotes" rows="3" placeholder="Alergias, preferencias..."></textarea></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" onclick="closeGuestModal()">Cancelar</button>
+                        <button type="submit" class="btn-save"><i class="fas fa-save"></i> Guardar Invitado</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .status-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.78rem;font-weight:700}
+        .status-pendiente{background:#ffeaa7;color:#6b4c00}.status-enviada{background:#ffd700;color:#5a4000}
+        .status-vista{background:#74b9ff;color:#1a3a6b}.status-confirmada{background:#55efc4;color:#006b4f}
+        .status-declinada{background:#636e72;color:#fff}
+        .badge-cat{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.75rem;text-transform:capitalize}
+        .cat-familia{background:#e056fd22;color:#8e44ad}.cat-padrinos{background:#f39c1222;color:#b7770d}
+        .cat-amigos{background:#3498db22;color:#1a5276}.cat-conocidos{background:#1abc9c22;color:#0e6655}
+        .cat-otro{background:#dfe6e9;color:#636e72}
+        .action-group{display:flex;gap:5px}
+        .btn-wa{background:#25D366;color:#fff;border:none;border-radius:6px;padding:5px 9px;cursor:pointer;font-size:.8rem}
+        .btn-copy{background:#6c5ce7;color:#fff;border:none;border-radius:6px;padding:5px 9px;cursor:pointer;font-size:.8rem}
+        .btn-edit{background:#0984e3;color:#fff;border:none;border-radius:6px;padding:5px 9px;cursor:pointer;font-size:.8rem}
+        .btn-delete{background:#d63031;color:#fff;border:none;border-radius:6px;padding:5px 9px;cursor:pointer;font-size:.8rem}
+        .btn-wa:hover,.btn-copy:hover,.btn-edit:hover,.btn-delete:hover{opacity:.85}
+    </style>
+    <script>
+    window.RSVP_CONFIG = {
+        slug:      'xv-anos-penelope-gutierrez',
+        baseUrl:   'https://penelope-gutierrez.invitados.org/',
+        pin:       '6338',
+        eventName: 'XV Años Penélope Desirée Gutiérrez'
+    };
+    </script>
+    <script src="js/rsvp-admin.js"></script>
+</body>
+</html>

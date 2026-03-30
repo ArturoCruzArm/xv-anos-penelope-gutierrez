@@ -46,12 +46,12 @@ const photos = [
 // ── Configuración del evento (único lugar para cambiar datos del contrato) ──
 const CONFIG = {
     slug:               'xv-anos-penelope-gutierrez',
-    nombre:             'Penélope Desirée Gutiérrez',
-    telefono:           '524775629388',
-    fechaEvento:        new Date(2026, 8, 13, 17, 0, 0),
+    nombre:             (window.EVENT_CONFIG && window.EVENT_CONFIG.nombre)             || 'Penélope Desirée Gutiérrez',
+    telefono:           (window.EVENT_CONFIG && window.EVENT_CONFIG.telefono)           || '',
+    fechaEvento:        (window.EVENT_CONFIG && window.EVENT_CONFIG.fechaEvento)        || new Date(2026, 8, 13, 17, 0, 0),
     limiteImpresion:    100,
     limiteInvitacion:   null,
-    costoFotoAdicional: 15,   // MXN por foto adicional sobre el límite
+    costoFotoAdicional: (window.EVENT_CONFIG && window.EVENT_CONFIG.costoFotoAdicional) || 15,
 };
 
 const STORAGE_KEY = 'xv_anos_penelope_gutierrez_photo_selections';
