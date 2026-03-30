@@ -1,4 +1,4 @@
-const CACHE_SHELL = 'penelope-shell-v4';
+const CACHE_SHELL = 'penelope-shell-v5';
 const CACHE_IMAGES = 'penelope-images-v1';
 
 self.addEventListener('install', event => {
@@ -33,8 +33,9 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
     const url = new URL(event.request.url);
 
-    // No interceptar peticiones externas (Supabase, Google Fonts, etc.)
+    // No interceptar peticiones externas ni no-GET
     if (url.origin !== self.location.origin) return;
+    if (event.request.method !== 'GET') return;
 
     if (url.pathname.includes('/imagenes/')) {
         event.respondWith(
