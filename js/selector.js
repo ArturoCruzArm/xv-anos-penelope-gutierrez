@@ -754,3 +754,66 @@ window.addEventListener('beforeunload', () => {
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
+
+// ========================================
+// DOWNLOAD FUNCTIONS
+// ========================================
+async function downloadCurrentPhoto() {
+    if (currentPhotoIndex === null) return;
+    const url = photos[currentPhotoIndex];
+    if (!url) return;
+    const filename = 'foto-' + (currentPhotoIndex + 1) + '.jpg';
+    showToast('Descargando...', 'success');
+    try {
+        const resp = await fetch(url, { mode: 'cors' });
+        const blob = await resp.blob();
+        let finalBlob = blob;
+        if (!blob.type.includes('jpeg') && !blob.type.includes('jpg')) {
+            const bmp = await createImageBitmap(blob);
+            const canvas = document.createElement('canvas');
+            canvas.width = bmp.width; canvas.height = bmp.height;
+            canvas.getContext('2d').drawImage(bmp, 0, 0);
+            finalBlob = await new Promise(function(res){ canvas.toBlob(res, 'image/jpeg', 0.95); });
+        }
+        const a = document.createElement('a');
+        const objUrl = URL.createObjectURL(finalBlob);
+        a.href = objUrl; a.download = filename;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(objUrl); }, 2000);
+        sbRegistrarVisita('descarga');
+        showToast('Descargando ' + filename, 'success');
+    } catch(e) {
+        window.open(url, '_blank');
+        showToast('Abriendo foto...', 'success');
+    }
+}
+
+function downloadAndClose() {
+    downloadCurrentPhoto();
+    closeModal();
+}
+
+// Inyectar botones de descarga en el modal al cargar
+(function injectDownloadButtons(){
+    function tryInject(){
+        var actions = document.querySelector('.modal-actions');
+        if (!actions) return;
+        if (document.getElementById('btnDownloadClose')) return;
+        var btnDlClose = document.createElement('button');
+        btnDlClose.id = 'btnDownloadClose';
+        btnDlClose.className = 'btn';
+        btnDlClose.textContent = '\u2B07 Descargar y Cerrar';
+        btnDlClose.style.cssText = 'background:#6c5ce7;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.85rem;margin-right:4px;';
+        btnDlClose.addEventListener('click', downloadAndClose);
+        var btnDl = document.createElement('button');
+        btnDl.id = 'btnDownloadPhoto';
+        btnDl.className = 'btn';
+        btnDl.textContent = '\u2B07 JPG';
+        btnDl.style.cssText = 'background:#0984e3;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.85rem;margin-right:4px;';
+        btnDl.addEventListener('click', downloadCurrentPhoto);
+        actions.insertBefore(btnDlClose, actions.firstChild);
+        actions.insertBefore(btnDl, btnDlClose);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', tryInject);
+    else tryInject();
+})();
