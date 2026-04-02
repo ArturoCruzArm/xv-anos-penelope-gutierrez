@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Datos del Evento - XV Anos Penelope Gutierrez</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --purple: #6a1b9a; --lilac: #c8a2d0; --dark: #1a0a2e; }
+    body {
+      font-family: 'Lato', sans-serif;
+      background: linear-gradient(135deg, #1a0a2e 0%, #2d1054 100%);
+      color: #fff;
+      min-height: 100vh;
+    }
+    .nav-bar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(26,10,46,.95); backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(200,162,208,.2);
+      padding: .7rem 1rem;
+      display: flex; gap: .8rem; justify-content: center; flex-wrap: wrap;
+    }
+    .nav-bar a {
+      color: var(--lilac); text-decoration: none; font-size: .85rem;
+      padding: .4rem .9rem; border-radius: 20px;
+      border: 1px solid rgba(200,162,208,.3);
+      transition: background .2s;
+    }
+    .nav-bar a:hover { background: rgba(200,162,208,.15); }
+    .nav-bar a.active { background: var(--purple); border-color: var(--purple); color: #fff; }
+    .container { max-width: 680px; margin: 0 auto; padding: 1rem 1rem 4rem; }
+    .save-toast {
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+      background: #1e3a2e; border: 1px solid #34d399; color: #34d399;
+      padding: .7rem 1.5rem; border-radius: 30px; font-size: .9rem;
+      opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 999;
+    }
+    .save-toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="index.html">Invitacion</a>
+    <a href="invitados.html">Invitados</a>
+    <a href="contrato.html">Contrato</a>
+    <a href="logistica.html">Logistica</a>
+    <a href="datos.html" class="active">Datos</a>
+  </nav>
+
+  <div class="container">
+    <div id="datos-form-container"></div>
+  </div>
+
+  <div class="save-toast" id="saveToast">Informacion guardada</div>
+
+  <script src="visitas.js"></script>
+  <script src="js/datos-form.js"></script>
+  <script>
+    const SLUG = 'xv-anos-penelope-gutierrez';
+    DatosForm.init(SLUG, 'datos-form-container');
+
+    document.addEventListener('df:saved', () => {
+      const t = document.getElementById('saveToast');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    });
+  </script>
+</body>
+</html>

@@ -163,5 +163,33 @@
     </script>
     <script src="js/rsvp-admin.js"></script>
 <script src="js/foro7-footer.js"></script>
+<script>
+/* -- Notificaciones de datos pendientes -- */
+(function(){
+  const SB='https://nzpujmlienzfetqcgsxz.supabase.co';
+  const AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56cHVqbWxpZW56ZmV0cWNnc3h6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODYzMzYsImV4cCI6MjA5MDI2MjMzNn0.xl3lsb-KYj5tVLKTnzpbsdEGoV9ySnswH4eyRuyEH1s';
+  const H={apikey:AK,Authorization:'Bearer '+AK,'Content-Type':'application/json'};
+  const SLUG='xv-anos-penelope-gutierrez';
+  async function checkNotif(){
+    try{
+      const er=await fetch(SB+'/rest/v1/eventos?slug=eq.'+SLUG+'&select=id&limit=1',{headers:H});
+      const [ev]=await er.json(); if(!ev) return;
+      const nr=await fetch(SB+'/rest/v1/notificaciones?evento_id=eq.'+ev.id+'&leida=eq.false&select=id,seccion,campos_actualizados,created_at&order=created_at.desc',{headers:H});
+      const notifs=await nr.json();
+      if(!notifs.length) return;
+      const badge=document.createElement('div');
+      badge.id='notif-badge';
+      badge.style.cssText='position:fixed;top:80px;right:1rem;z-index:9999;background:#7c3aed;color:#fff;border-radius:12px;padding:.8rem 1.2rem;max-width:320px;box-shadow:0 4px 20px rgba(0,0,0,.4);font-size:.85rem;cursor:pointer;';
+      badge.innerHTML='<strong>Notificaciones</strong>';
+      badge.onclick=async()=>{
+        await fetch(SB+'/rest/v1/notificaciones?evento_id=eq.'+ev.id+'&leida=eq.false',{method:'PATCH',headers:H,body:JSON.stringify({leida:true})});
+        badge.remove();
+      };
+      document.body.appendChild(badge);
+    }catch(e){}
+  }
+  document.addEventListener('DOMContentLoaded',checkNotif);
+})();
+</script>
 </body>
 </html>
