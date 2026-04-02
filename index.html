@@ -135,8 +135,12 @@
                         <strong>Fecha</strong>
                         Domingo, 13 de Septiembre de 2026
                     </div>
-                    <div class="pending-badge">
-                        <i class="fas fa-clock" aria-hidden="true"></i> Lugar por confirmar
+                    <div class="pending-badge" id="ceremonia-lugar-badge">
+                        <i class="fas fa-clock" aria-hidden="true"></i> <span data-campo="ceremonia-lugar">Lugar por confirmar</span>
+                    </div>
+                    <div class="event-info" id="ceremonia-hora-info" style="display:none">
+                        <strong>Horario</strong>
+                        <span data-campo="ceremonia-hora"></span>
                     </div>
                 </div>
 
@@ -149,11 +153,11 @@
                     </div>
                     <div class="event-info">
                         <strong>Horario</strong>
-                        5:00 PM – 11:00 PM
+                        <span data-campo="recepcion-hora">5:00 PM</span> – <span data-campo="recepcion-hora-fin">11:00 PM</span>
                     </div>
                     <div class="event-info">
                         <strong>Salón</strong>
-                        Salones Extravaganza<br>León, Guanajuato
+                        <span data-campo="recepcion-lugar">Salones Extravaganza</span><br><span data-campo="recepcion-direccion">León, Guanajuato</span>
                     </div>
                 </div>
             </div>
