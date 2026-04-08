@@ -29,6 +29,8 @@
     // Vestimenta
     { seccion: 'vestimenta', key: 'tipo',              sel: '[data-campo="vestimenta-tipo"]' },
     { seccion: 'vestimenta', key: 'colores_reservados', sel: '[data-campo="vestimenta-colores"]' },
+    // Invitación web
+    { seccion: 'invitacion_web', key: 'frase', sel: '[data-campo="invitacion-frase"]' },
   ];
 
   async function load(slug) {
