@@ -197,6 +197,10 @@
                         <button type="button" class="counter-btn" id="btnPlus" aria-label="Sumar">+</button>
                     </div>
                 </div>
+                <div class="rsvp-field" id="nombresGroup" style="display:none;">
+                    <label>Nombres de tus acompañantes</label>
+                    <div id="nombresContainer"></div>
+                </div>
                 <div class="rsvp-field">
                     <label>¿Asistirás?</label>
                     <div class="radio-group">
@@ -382,26 +386,68 @@
     const btnPlus   = document.getElementById('btnPlus');
     const rsvpForm  = document.getElementById('rsvpForm');
 
+    function buildNombreInputs(count) {
+        const container = document.getElementById('nombresContainer');
+        const group = document.getElementById('nombresGroup');
+        if (!container || !group) return;
+        container.innerHTML = '';
+        const numAcomp = Math.max(0, count - 1);
+        group.style.display = numAcomp > 0 ? 'block' : 'none';
+        for (let i = 0; i < numAcomp; i++) {
+            const inp = document.createElement('input');
+            inp.type = 'text';
+            inp.className = 'nombre-asistente';
+            inp.placeholder = 'Acompanante ' + (i + 1);
+            inp.style.cssText = 'width:100%;padding:10px;margin-bottom:6px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(255,255,255,0.08);color:inherit;font-size:.95rem;';
+            container.appendChild(inp);
+        }
+    }
+
     if (btnMinus && btnPlus && guestsEl) {
         btnMinus.addEventListener('click', () => {
-            if (guestCount > 1) { guestCount--; guestsEl.textContent = guestCount; }
+            if (guestCount > 1) { guestCount--; guestsEl.textContent = guestCount; buildNombreInputs(guestCount); }
         });
         btnPlus.addEventListener('click', () => {
-            if (guestCount < 15) { guestCount++; guestsEl.textContent = guestCount; }
+            if (guestCount < 15) { guestCount++; guestsEl.textContent = guestCount; buildNombreInputs(guestCount); }
         });
     }
 
+    const PEN_SB_URL  = 'https://nzpujmlienzfetqcgsxz.supabase.co';
+    const PEN_SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56cHVqbWxpZW56ZmV0cWNnc3h6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODYzMzYsImV4cCI6MjA5MDI2MjMzNn0.xl3lsb-KYj5tVLKTnzpbsdEGoV9ySnswH4eyRuyEH1s';
+    const PEN_SB_H    = { 'apikey': PEN_SB_ANON, 'Authorization': 'Bearer ' + PEN_SB_ANON, 'Content-Type': 'application/json' };
+
     if (rsvpForm) {
-        rsvpForm.addEventListener('submit', e => {
+        rsvpForm.addEventListener('submit', async e => {
             e.preventDefault();
             const nameInput = document.getElementById('rsvpName');
             const phone     = document.getElementById('rsvpPhone').value.trim();
             const attending = rsvpForm.querySelector('input[name="attending"]:checked').value;
             const name      = nameInput.value.trim();
+            const nombres   = Array.from(document.querySelectorAll('.nombre-asistente')).map(inp => inp.value.trim()).filter(Boolean);
 
             // Validate
             nameInput.classList.remove('invalid');
             if (!name) { nameInput.classList.add('invalid'); nameInput.focus(); return; }
+
+            const asisitira = attending === 'si';
+
+            // Save to Supabase
+            const token = new URLSearchParams(window.location.search).get('inv');
+            if (!token) {
+                try {
+                    const evR = await fetch(`${PEN_SB_URL}/rest/v1/eventos?slug=eq.xv-anos-penelope-gutierrez&select=id&limit=1`,{headers:PEN_SB_H});
+                    const [ev] = await evR.json();
+                    if (ev?.id) {
+                        const r_inv = await fetch(`${PEN_SB_URL}/rest/v1/invitados`,{method:'POST',headers:{...PEN_SB_H,'Prefer':'return=representation'},
+                            body:JSON.stringify({evento_id:ev.id,nombre:name,telefono:phone||null,pases_asignados:guestCount,pases_confirmados:guestCount,asiste:asisitira,status:asisitira?'confirmada':'declinada',mensaje:null,fecha_confirmacion:new Date().toISOString()})});
+                        const [inv] = await r_inv.json();
+                        if (inv?.id && nombres.length) {
+                            await fetch(`${PEN_SB_URL}/rest/v1/acompanantes`,{method:'POST',headers:{...PEN_SB_H,'Prefer':'return=minimal'},
+                                body:JSON.stringify(nombres.map((n,i)=>({invitado_id:inv.id,nombre:n,orden:i})))});
+                        }
+                    }
+                } catch(e){}
+            }
 
             // Build WhatsApp message
             const asiste = attending === 'si'
@@ -412,6 +458,7 @@
             msg += `👤 *Nombre:* ${name}\n`;
             if (phone) msg += `📱 *Teléfono:* ${phone}\n`;
             msg += `🎉 *Asistencia:* ${asiste}\n`;
+            if (nombres.length) msg += `👥 *Acompañantes:* ${nombres.join(', ')}\n`;
             msg += `📅 *Evento:* Domingo 13 de Septiembre, 2026\n`;
             msg += `🏰 Salones Extravaganza — León, Gto.`;
 
