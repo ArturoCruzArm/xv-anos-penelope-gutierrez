@@ -127,7 +127,12 @@
                         </div>
                         <div class="form-group"><label>Mesa Asignada</label><input type="text" id="guestTable" placeholder="Ej: Mesa 5"></div>
                     </div>
-                    <div class="form-group"><label>Notas</label><textarea id="guestNotes" rows="3" placeholder="Alergias, preferencias..."></textarea></div>
+                                        <div class="form-group" id="acompGroup" style="display:none;">
+                        <label>Nombres de Acompanantes</label>
+                        <small style="color:#999;display:block;margin-bottom:8px;">Escribe los nombres que conozcas, deja vacios los que no sepas</small>
+                        <div id="acompContainer"></div>
+                    </div>
+<div class="form-group"><label>Notas</label><textarea id="guestNotes" rows="3" placeholder="Alergias, preferencias..."></textarea></div>
                     <div class="modal-footer">
                         <button type="button" class="btn-secondary" onclick="closeGuestModal()">Cancelar</button>
                         <button type="submit" class="btn-save"><i class="fas fa-save"></i> Guardar Invitado</button>
