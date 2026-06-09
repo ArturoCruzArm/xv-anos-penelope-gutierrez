@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/brands.min.css">
-    <link rel="stylesheet" href="css/index.css?v=1">
+    <link rel="stylesheet" href="css/index.css?v=2">
 
 </head>
 <body>
@@ -179,45 +179,50 @@
             <p style="text-align:center; color:var(--purple-light); margin-bottom:28px; font-size:1rem;">
                 Nos encantaría contarte entre los asistentes.<br>Confirma tu asistencia antes del <strong style="color:var(--gold);">6 de septiembre de 2026</strong>.
             </p>
+
+            <div id="personalizedWelcome" style="display:none;text-align:center;margin-bottom:20px;padding:16px;background:rgba(255,255,255,0.07);border-radius:12px;">
+                <p id="guestWelcomeText" style="font-size:1.1rem;margin-bottom:6px;"></p>
+                <p id="guestPassesText" style="opacity:.75;font-size:.9rem;"></p>
+            </div>
+
             <form id="rsvpForm" novalidate style="max-width:480px; margin:0 auto;">
                 <div class="rsvp-field">
-                    <label for="rsvpName">Nombre completo</label>
-                    <input type="text" id="rsvpName" name="name" placeholder="Tu nombre" autocomplete="name" required>
-                    <span class="field-error" id="nameError">Por favor escribe tu nombre</span>
+                    <label for="name">Nombre completo</label>
+                    <input type="text" id="name" name="name" placeholder="Tu nombre" autocomplete="name" required>
                 </div>
                 <div class="rsvp-field">
-                    <label for="rsvpPhone">WhatsApp (opcional)</label>
-                    <input type="tel" id="rsvpPhone" name="phone" placeholder="477-000-0000" autocomplete="tel">
-                </div>
-                <div class="rsvp-field">
-                    <label for="rsvpGuests">¿Cuántos asistentes?</label>
-                    <div class="guests-counter">
-                        <button type="button" class="counter-btn" id="btnMinus" aria-label="Restar">−</button>
-                        <span id="guestsCount">1</span>
-                        <button type="button" class="counter-btn" id="btnPlus" aria-label="Sumar">+</button>
-                    </div>
+                    <label for="guests">¿Cuántos asistentes? (incluyéndote)</label>
+                    <input type="number" id="guests" name="guests" min="1" max="20" value="1" required
+                           style="width:100%;padding:12px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(255,255,255,0.08);color:inherit;font-size:1rem;">
                 </div>
                 <div class="rsvp-field" id="nombresGroup" style="display:none;">
                     <label>Nombres de tus acompañantes</label>
                     <div id="nombresContainer"></div>
                 </div>
                 <div class="rsvp-field">
-                    <label>¿Asistirás?</label>
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name="attending" value="si" checked>
-                            <span class="radio-custom">✓ Sí, asistiré</span>
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="attending" value="no">
-                            <span class="radio-custom">✗ No podré ir</span>
-                        </label>
-                    </div>
+                    <label for="attendance">¿Asistirás?</label>
+                    <select id="attendance" name="attendance" required style="width:100%;padding:12px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(255,255,255,0.08);color:inherit;font-size:1rem;">
+                        <option value="">Selecciona</option>
+                        <option value="si">Sí, confirmo mi asistencia</option>
+                        <option value="no">No podré asistir</option>
+                    </select>
+                </div>
+                <div class="rsvp-field">
+                    <label for="message">Mensaje para Penélope (opcional)</label>
+                    <textarea id="message" name="message" placeholder="Escribe un mensaje..." rows="3"
+                              style="width:100%;padding:12px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(255,255,255,0.08);color:inherit;font-size:1rem;resize:vertical;"></textarea>
                 </div>
                 <button type="submit" class="rsvp-submit" id="btnRSVP">
-                    <i class="fab fa-whatsapp" aria-hidden="true"></i> Confirmar por WhatsApp
+                    Enviar Confirmación
                 </button>
             </form>
+            <div id="successMessage" style="display:none;text-align:center;padding:20px;background:rgba(16,185,129,.15);border:1px solid #10b981;border-radius:12px;color:#6ee7b7;margin-top:16px;">
+                <p style="margin-bottom:14px;">✓ ¡Gracias! Tu confirmación ha sido registrada.</p>
+                <p style="margin-bottom:12px;font-size:.9rem;opacity:.8;">¿Deseas avisar por WhatsApp?</p>
+                <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
+                    <a id="waBtnPenelope" href="#" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:#25d366;color:#fff;padding:10px 22px;border-radius:25px;text-decoration:none;font-weight:bold;">💬 WhatsApp</a>
+                </div>
+            </div>
         </section>
 
         <!-- Compartir -->
@@ -379,12 +384,9 @@
         els.forEach(el => io.observe(el));
     }
 
-    /* ── RSVP Form ────────────────────────────────────────── */
-    let guestCount = 1;
-    const guestsEl  = document.getElementById('guestsCount');
-    const btnMinus  = document.getElementById('btnMinus');
-    const btnPlus   = document.getElementById('btnPlus');
+    /* ── RSVP Form (sin token — visitantes directos) ──────── */
     const rsvpForm  = document.getElementById('rsvpForm');
+    const guestsInput = document.getElementById('guests');
 
     function buildNombreInputs(count) {
         const container = document.getElementById('nombresContainer');
@@ -403,66 +405,57 @@
         }
     }
 
-    if (btnMinus && btnPlus && guestsEl) {
-        btnMinus.addEventListener('click', () => {
-            if (guestCount > 1) { guestCount--; guestsEl.textContent = guestCount; buildNombreInputs(guestCount); }
-        });
-        btnPlus.addEventListener('click', () => {
-            if (guestCount < 15) { guestCount++; guestsEl.textContent = guestCount; buildNombreInputs(guestCount); }
-        });
+    if (guestsInput) {
+        guestsInput.addEventListener('input', function(){ buildNombreInputs(parseInt(this.value)||1); });
+        guestsInput.addEventListener('change', function(){ buildNombreInputs(parseInt(this.value)||1); });
     }
 
     const PEN_SB_URL  = 'https://nzpujmlienzfetqcgsxz.supabase.co';
     const PEN_SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56cHVqbWxpZW56ZmV0cWNnc3h6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODYzMzYsImV4cCI6MjA5MDI2MjMzNn0.xl3lsb-KYj5tVLKTnzpbsdEGoV9ySnswH4eyRuyEH1s';
     const PEN_SB_H    = { 'apikey': PEN_SB_ANON, 'Authorization': 'Bearer ' + PEN_SB_ANON, 'Content-Type': 'application/json' };
 
-    if (rsvpForm) {
+    // Solo manejar envio si NO hay token (rsvp-guest.js maneja el caso con token)
+    const hasToken = new URLSearchParams(window.location.search).has('inv');
+    if (rsvpForm && !hasToken) {
         rsvpForm.addEventListener('submit', async e => {
             e.preventDefault();
-            const nameInput = document.getElementById('rsvpName');
-            const phone     = document.getElementById('rsvpPhone').value.trim();
-            const attending = rsvpForm.querySelector('input[name="attending"]:checked').value;
-            const name      = nameInput.value.trim();
-            const nombres   = Array.from(document.querySelectorAll('.nombre-asistente')).map(inp => inp.value.trim()).filter(Boolean);
+            const name = document.getElementById('name').value.trim();
+            const attendance = document.getElementById('attendance').value;
+            const mensaje = document.getElementById('message').value.trim();
+            const gCount = parseInt(guestsInput?.value) || 1;
+            const nombres = Array.from(document.querySelectorAll('.nombre-asistente')).map(inp => inp.value.trim()).filter(Boolean);
 
-            // Validate
-            nameInput.classList.remove('invalid');
-            if (!name) { nameInput.classList.add('invalid'); nameInput.focus(); return; }
+            if (!name || !attendance) return;
+            const asiste = attendance === 'si';
 
-            const asisitira = attending === 'si';
-
-            // Save to Supabase
-            const token = new URLSearchParams(window.location.search).get('inv');
-            if (!token) {
-                try {
-                    const evR = await fetch(`${PEN_SB_URL}/rest/v1/eventos?slug=eq.xv-anos-penelope-gutierrez&select=id&limit=1`,{headers:PEN_SB_H});
-                    const [ev] = await evR.json();
-                    if (ev?.id) {
-                        const r_inv = await fetch(`${PEN_SB_URL}/rest/v1/invitados`,{method:'POST',headers:{...PEN_SB_H,'Prefer':'return=representation'},
-                            body:JSON.stringify({evento_id:ev.id,nombre:name,telefono:phone||null,pases_asignados:guestCount,pases_confirmados:guestCount,asiste:asisitira,status:asisitira?'confirmada':'declinada',mensaje:null,fecha_confirmacion:new Date().toISOString()})});
-                        const [inv] = await r_inv.json();
-                        if (inv?.id && nombres.length) {
-                            await fetch(`${PEN_SB_URL}/rest/v1/acompanantes`,{method:'POST',headers:{...PEN_SB_H,'Prefer':'return=minimal'},
-                                body:JSON.stringify(nombres.map((n,i)=>({invitado_id:inv.id,nombre:n,orden:i})))});
-                        }
+            try {
+                const evR = await fetch(PEN_SB_URL+'/rest/v1/eventos?slug=eq.xv-anos-penelope-gutierrez&select=id&limit=1',{headers:PEN_SB_H});
+                const [ev] = await evR.json();
+                if (ev?.id) {
+                    const r_inv = await fetch(PEN_SB_URL+'/rest/v1/invitados',{method:'POST',headers:{...PEN_SB_H,'Prefer':'return=representation'},
+                        body:JSON.stringify({evento_id:ev.id,nombre:name,pases_asignados:gCount,pases_confirmados:gCount,asiste:asiste,status:asiste?'confirmada':'declinada',mensaje:mensaje||null,fecha_confirmacion:new Date().toISOString()})});
+                    const [inv] = await r_inv.json();
+                    if (inv?.id && nombres.length) {
+                        await fetch(PEN_SB_URL+'/rest/v1/acompanantes',{method:'POST',headers:{...PEN_SB_H,'Prefer':'return=minimal'},
+                            body:JSON.stringify(nombres.map((n,i)=>({invitado_id:inv.id,nombre:n,orden:i})))});
                     }
-                } catch(e){}
+                }
+            } catch(e){}
+
+            // Mostrar mensaje de exito con opcion de WhatsApp
+            rsvpForm.style.display = 'none';
+            const successEl = document.getElementById('successMessage');
+            if (successEl) {
+                successEl.style.display = 'block';
+                const waBtn = successEl.querySelector('#waBtnPenelope');
+                if (waBtn) {
+                    const statusTxt = asiste ? 'Si asistire ('+gCount+' persona'+(gCount>1?'s':'')+')' : 'No podre asistir';
+                    let msg = 'Hola, te confirmo mi asistencia a los XV de Penelope\n\nNombre: '+name+'\nAsistencia: '+statusTxt;
+                    if (nombres.length) msg += '\nAcompanantes: '+nombres.join(', ');
+                    waBtn.href = 'https://wa.me/'+CONFIG.telefono+'?text='+encodeURIComponent(msg);
+                    waBtn.target = '_blank';
+                }
             }
-
-            // Build WhatsApp message
-            const asiste = attending === 'si'
-                ? `✅ *Sí asistiré* (${guestCount} persona${guestCount > 1 ? 's' : ''})`
-                : '❌ *No podré asistir*';
-
-            let msg = `Hola, te confirmo mi asistencia a los XV años de Penélope Desirée Gutiérrez 💜\n\n`;
-            msg += `👤 *Nombre:* ${name}\n`;
-            if (phone) msg += `📱 *Teléfono:* ${phone}\n`;
-            msg += `🎉 *Asistencia:* ${asiste}\n`;
-            if (nombres.length) msg += `👥 *Acompañantes:* ${nombres.join(', ')}\n`;
-            msg += `📅 *Evento:* Domingo 13 de Septiembre, 2026\n`;
-            msg += `🏰 Salones Extravaganza — León, Gto.`;
-
-            window.open('https://wa.me/' + CONFIG.telefono + '?text=' + encodeURIComponent(msg), '_blank');
         });
     }
 
@@ -493,7 +486,7 @@
 </script>
     <script src="js/visitas.js?v=2"></script>
 
-    <script src="js/rsvp-guest.js?v=1"></script>
+    <script src="js/rsvp-guest.js?v=2"></script>
 <script src="js/foro7-footer.js?v=1"></script>
 <script>window.EVENTO_SLUG='xv-anos-penelope-gutierrez';</script>
 <script src="js/evento-loader.js?v=1"></script>
