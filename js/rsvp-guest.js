@@ -91,15 +91,19 @@
         const textEl = document.getElementById('guestWelcomeText');
         const pasesEl = document.getElementById('guestPassesText');
         if (section && textEl && pasesEl) {
-            if (totalAcomp > 0) {
+            if (!g.pases_asignados) {
+                textEl.textContent = `${g.nombre}, estas cordialmente invitado(a)`;
+                pasesEl.innerHTML = '🎟 Pases libres';
+            } else if (totalAcomp > 0) {
                 const yMas = acompNames.length > 0
                     ? (totalAcomp > acompNames.length ? ` y ${totalAcomp - acompNames.length} mas` : '')
                     : ` y ${totalAcomp} mas`;
                 textEl.textContent = `${g.nombre}${totalAcomp > 0 ? yMas : ''}, estan cordialmente invitados`;
+                pasesEl.innerHTML = `🎟 ${g.pases_asignados} ${g.pases_asignados === 1 ? 'pase' : 'pases'}`;
             } else {
                 textEl.textContent = `${g.nombre}, estas cordialmente invitado(a)`;
+                pasesEl.innerHTML = `🎟 ${g.pases_asignados} pase`;
             }
-            pasesEl.innerHTML = `🎟 ${g.pases_asignados} ${g.pases_asignados === 1 ? 'pase' : 'pases'}`;
             section.style.display = 'block';
         }
 
@@ -107,25 +111,27 @@
         const nameInput = document.getElementById('name');
         if (nameInput) { nameInput.value = g.nombre; nameInput.readOnly = true; nameInput.style.opacity = '.7'; }
 
-        // Configurar input de pases
+        // Configurar input de pases (0 o null = libre hasta 20)
         const guestsInput = document.getElementById('guests');
+        const libre = !g.pases_asignados;
+        const maxPases = libre ? 20 : g.pases_asignados;
         if (guestsInput) {
             if (guestsInput.tagName === 'SELECT') {
                 guestsInput.innerHTML = '';
-                for (let i = 1; i <= g.pases_asignados; i++) {
+                for (let i = 1; i <= maxPases; i++) {
                     const opt = document.createElement('option');
                     opt.value = i; opt.textContent = i === 1 ? '1 persona' : `${i} personas`;
                     guestsInput.appendChild(opt);
                 }
-                guestsInput.value = g.pases_asignados;
+                guestsInput.value = libre ? 1 : maxPases;
             } else {
-                guestsInput.max = g.pases_asignados;
-                guestsInput.value = g.pases_asignados;
+                guestsInput.max = maxPases;
+                guestsInput.value = libre ? 1 : maxPases;
             }
             const existingNames = acompsData.map(a => a.nombre);
             guestsInput.addEventListener('change', function () { buildNombreInputs(parseInt(this.value) || 1, existingNames); });
             guestsInput.addEventListener('input', function () { buildNombreInputs(parseInt(this.value) || 1, existingNames); });
-            buildNombreInputs(g.pases_asignados, existingNames);
+            buildNombreInputs(libre ? 1 : maxPases, existingNames);
         }
 
         // Marcar como vista

@@ -86,7 +86,8 @@
         const extra = g.pases_asignados > 1
             ? (acompNombres.length ? `\n\nAcompanantes registrados: ${acompNombres.join(', ')}` : '')
             : '';
-        const msg = `Hola ${g.nombre}\n\nTe invitamos a *${evName}*${evDate}.\n\n${link}\n\nTienes *${g.pases_asignados} ${g.pases_asignados === 1 ? 'pase' : 'pases'}*.${extra}\n\nConfirma desde el enlace.`;
+        const pasesText = !g.pases_asignados ? 'pases libres' : `${g.pases_asignados} ${g.pases_asignados === 1 ? 'pase' : 'pases'}`;
+        const msg = `Hola ${g.nombre}\n\nTe invitamos a *${evName}*${evDate}.\n\n${link}\n\nTienes *${pasesText}*.${extra}\n\nConfirma desde el enlace.`;
 
         await fetch(`${SB_URL}/rest/v1/invitados?id=eq.${id}`, {
             method: 'PATCH', headers: { ...SB_H, 'Prefer': 'return=minimal' },
@@ -245,7 +246,7 @@
             return `<tr>
                 <td><strong>${g.nombre}</strong>${g.notas ? `<br><small style="color:#999">${g.notas}</small>` : ''}${g.mensaje ? `<br><small style="color:#6c5ce7;font-style:italic">"${g.mensaje}"</small>` : ''}</td>
                 <td><span class="badge-cat cat-${g.categoria||'otro'}">${g.categoria||'—'}</span></td>
-                <td style="text-align:center">${g.pases_asignados}</td>
+                <td style="text-align:center">${g.pases_asignados || '<span style="color:#00b894;font-size:.75rem">libre</span>'}</td>
                 <td style="text-align:center">${pConf}</td>
                 <td>${renderNombres(g)}</td>
                 <td>${g.mesa_asignada||'—'}</td>
@@ -299,11 +300,11 @@
         document.getElementById('guestName').value = g.nombre || '';
         document.getElementById('guestPhone').value = g.telefono || '';
         document.getElementById('guestCategory').value = g.categoria || 'familia';
-        document.getElementById('guestPases').value = g.pases_asignados || 1;
+        document.getElementById('guestPases').value = g.pases_asignados ?? 0;
         document.getElementById('guestTable').value = g.mesa_asignada || '';
         document.getElementById('guestNotes').value = g.notas || '';
         const existingNames = (g._acomps || []).map(a => a.nombre);
-        buildAcompFields(g.pases_asignados || 1, existingNames);
+        buildAcompFields(g.pases_asignados || 0, existingNames);
         document.getElementById('guestModal').style.display = 'flex';
     }
 
@@ -367,7 +368,7 @@
                     nombre: document.getElementById('guestName').value.trim(),
                     telefono: document.getElementById('guestPhone').value.trim() || null,
                     categoria: document.getElementById('guestCategory').value || 'familia',
-                    pases_asignados: parseInt(document.getElementById('guestPases').value) || 1,
+                    pases_asignados: parseInt(document.getElementById('guestPases').value) || 0,
                     mesa_asignada: document.getElementById('guestTable').value.trim() || null,
                     notas: document.getElementById('guestNotes').value.trim() || null
                 };
