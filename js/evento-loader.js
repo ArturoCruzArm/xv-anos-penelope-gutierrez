@@ -20,7 +20,11 @@
     { seccion: 'recepcion', key: 'lugar',     sel: '[data-campo="recepcion-lugar"]' },
     { seccion: 'recepcion', key: 'direccion', sel: '[data-campo="recepcion-direccion"]' },
     { seccion: 'recepcion', key: 'hora',      sel: '[data-campo="recepcion-hora"]' },
+    { seccion: 'recepcion', key: 'hora_fin',  sel: '[data-campo="recepcion-hora-fin"]' },
     { seccion: 'recepcion', key: 'maps_url',  sel: '[data-campo="recepcion-maps"]', attr: 'href' },
+    // Padrinos de honor
+    { seccion: 'padrinos_honor', key: 'madrina', sel: '[data-campo="padrinos-madrina"]' },
+    { seccion: 'padrinos_honor', key: 'padrino', sel: '[data-campo="padrinos-padrino"]' },
     // Protagonistas
     { seccion: 'protagonistas', key: 'nombre',       sel: '[data-campo="protagonista-nombre"]' },
     { seccion: 'protagonistas', key: 'nombre_madre', sel: '[data-campo="madre-nombre"]' },
@@ -47,9 +51,12 @@
       BINDINGS.forEach(({ seccion, key, sel, attr }) => {
         const val = cfg[seccion]?.[key];
         if (!val) return;
+        const displayVal = /^(hora|hora_fin)$/.test(key) && /^\d{2}:\d{2}$/.test(val)
+          ? new Date(`2000-01-01T${val}:00`).toLocaleTimeString('es-MX', { hour: 'numeric', minute: '2-digit' })
+          : val;
         document.querySelectorAll(sel).forEach(el => {
           if (attr) el.setAttribute(attr, val);
-          else el.textContent = val;
+          else el.textContent = displayVal;
         });
       });
 

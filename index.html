@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Invitación a los XV años de Penélope Desirée Gutiérrez - 13 de septiembre de 2026">
-    <meta name="theme-color" content="#7c3aed">
+    <meta name="theme-color" content="#170b0d">
     <title>XV Años - Penélope Desirée Gutiérrez</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,45 +13,32 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/brands.min.css">
-    <link rel="stylesheet" href="css/index.css?v=2">
+    <link rel="stylesheet" href="css/index.css?v=7">
 
 </head>
 <body>
 
-<!-- ─── Envelope Screen ──────────────────────────────────────── -->
+<!-- ─── Gala Intro Screen ────────────────────────────────────── -->
 <div id="envelope-screen" role="button" aria-label="Abrir invitación" tabindex="0">
     <div class="stars-layer" id="starsLayer"></div>
     <div id="particlesLayer" aria-hidden="true"></div>
 
     <div class="env-wrap">
-        <div class="env-title">
-            Penélope Desirée<br>
-            <span style="font-size:0.55em; letter-spacing:4px; font-family:'Lato',sans-serif; font-weight:300;">GUTIÉRREZ</span>
+        <div id="envelope" class="opening-card" aria-hidden="true">
+            <span class="card-corner card-corner-tl"></span>
+            <span class="card-corner card-corner-tr"></span>
+            <span class="card-corner card-corner-bl"></span>
+            <span class="card-corner card-corner-br"></span>
+            <p class="card-kicker">MIS XV AÑOS</p>
+            <div class="card-monogram">P</div>
+            <p class="card-name">Penélope Desirée</p>
+            <p class="card-surname">GUTIÉRREZ</p>
+            <div class="card-rule"><span>✦</span></div>
+            <time class="card-date" datetime="2026-09-13">13 · 09 · 2026</time>
+            <span class="card-open-label">Abrir invitación</span>
         </div>
 
-        <div id="envelope" aria-hidden="true">
-            <!-- Body -->
-            <div class="env-body">
-                <div class="env-body-line"></div>
-            </div>
-
-            <!-- Letter inside -->
-            <div class="env-letter">
-                <span class="env-letter-name">Penélope Desirée</span>
-                <span class="env-letter-xv">MIS XV AÑOS · 2026</span>
-            </div>
-
-            <!-- Top flap -->
-            <div class="env-flap">
-                <div class="env-flap-face"></div>
-                <div class="env-flap-back"></div>
-            </div>
-
-            <!-- Wax seal -->
-            <div class="wax-seal" aria-hidden="true">👑</div>
-        </div>
-
-        <p class="tap-hint"><i class="fas fa-hand-pointer"></i> Toca para abrir tu invitación</p>
+        <p class="tap-hint"><i class="fas fa-hand-pointer"></i> Toca para comenzar</p>
     </div>
 </div>
 
@@ -66,11 +53,11 @@
 </button>
 
 <!-- ─── Floating decorations ─────────────────────────────────── -->
-<div class="floating-element" style="left:6%;  --fdelay:0s;"  aria-hidden="true">✨</div>
-<div class="floating-element" style="left:26%; --fdelay:5s;"  aria-hidden="true">🌸</div>
-<div class="floating-element" style="left:50%; --fdelay:10s;" aria-hidden="true">💜</div>
-<div class="floating-element" style="left:74%; --fdelay:15s;" aria-hidden="true">🌸</div>
-<div class="floating-element" style="left:90%; --fdelay:3s;"  aria-hidden="true">✨</div>
+<div class="floating-element" style="left:6%;  --fdelay:0s;"  aria-hidden="true">✦</div>
+<div class="floating-element" style="left:26%; --fdelay:7s;"  aria-hidden="true">·</div>
+<div class="floating-element" style="left:50%; --fdelay:14s;" aria-hidden="true">✧</div>
+<div class="floating-element" style="left:74%; --fdelay:21s;" aria-hidden="true">·</div>
+<div class="floating-element" style="left:90%; --fdelay:4s;"  aria-hidden="true">✦</div>
 
 <!-- ─── Invitation content ───────────────────────────────────── -->
 <div id="invitation">
@@ -115,11 +102,24 @@
         <section class="reveal">
             <h2 class="section-title">Con la Bendición de</h2>
             <div class="family-card">
-                <div class="family-icon" aria-hidden="true">💜</div>
+                <div class="family-icon" aria-hidden="true"><i class="fas fa-heart"></i></div>
                 <div class="family-role">Con la bendición de mis padres</div>
                 <div class="family-names">
                     Luis Alberto Gutiérrez Simota<br>
                     &amp; Fátima Miroslava Hernández Mendoza
+                </div>
+            </div>
+        </section>
+
+        <!-- Padrinos -->
+        <section class="reveal">
+            <h2 class="section-title">Mis Padrinos</h2>
+            <div class="family-card">
+                <div class="family-icon" aria-hidden="true"><i class="fas fa-handshake"></i></div>
+                <div class="family-role">Padrinos de honor</div>
+                <div class="family-names">
+                    <span data-campo="padrinos-madrina">Anette de Guadalupe Rodríguez Mendoza</span><br>
+                    &amp; <span data-campo="padrinos-padrino">Crisanto Enrique Tapia Mendoza</span>
                 </div>
             </div>
         </section>
@@ -129,23 +129,27 @@
             <h2 class="section-title">Detalles del Evento</h2>
             <div class="event-grid">
                 <div class="event-card">
-                    <span class="event-icon" aria-hidden="true">⛪</span>
+                    <span class="event-icon" aria-hidden="true"><i class="fas fa-church"></i></span>
                     <h3 class="event-title">Misa de Acción de Gracias</h3>
                     <div class="event-info">
                         <strong>Fecha</strong>
                         Domingo, 13 de Septiembre de 2026
                     </div>
-                    <div class="pending-badge" id="ceremonia-lugar-badge">
-                        <i class="fas fa-clock" aria-hidden="true"></i> <span data-campo="ceremonia-lugar">Lugar por confirmar</span>
+                    <div class="event-info">
+                        <strong>Templo</strong>
+                        <span data-campo="ceremonia-lugar">Iglesia de las Madres Oblatas</span>
                     </div>
-                    <div class="event-info" id="ceremonia-hora-info" style="display:none">
+                    <div class="event-info" id="ceremonia-hora-info">
                         <strong>Horario</strong>
-                        <span data-campo="ceremonia-hora"></span>
+                        <span data-campo="ceremonia-hora">12:50 PM</span>
                     </div>
+                    <a class="location-btn" data-campo="ceremonia-maps" href="https://share.google/0xLEs8qozTF1Mx8gP" target="_blank" rel="noopener noreferrer">
+                        <i class="fas fa-location-dot" aria-hidden="true"></i> Ver ubicación
+                    </a>
                 </div>
 
                 <div class="event-card">
-                    <span class="event-icon" aria-hidden="true">🎊</span>
+                    <span class="event-icon" aria-hidden="true"><i class="fas fa-champagne-glasses"></i></span>
                     <h3 class="event-title">Recepción y Fiesta</h3>
                     <div class="event-info">
                         <strong>Fecha</strong>
@@ -153,12 +157,15 @@
                     </div>
                     <div class="event-info">
                         <strong>Horario</strong>
-                        <span data-campo="recepcion-hora">5:00 PM</span> – <span data-campo="recepcion-hora-fin">11:00 PM</span>
+                        <span data-campo="recepcion-hora">4:30 PM</span> – <span data-campo="recepcion-hora-fin">10:00 PM</span>
                     </div>
                     <div class="event-info">
                         <strong>Salón</strong>
                         <span data-campo="recepcion-lugar">Salones Extravaganza</span><br><span data-campo="recepcion-direccion">León, Guanajuato</span>
                     </div>
+                    <a class="location-btn" data-campo="recepcion-maps" href="https://share.google/ufa6Un48JCnsBbLJD" target="_blank" rel="noopener noreferrer">
+                        <i class="fas fa-location-dot" aria-hidden="true"></i> Ver ubicación
+                    </a>
                 </div>
             </div>
         </section>
@@ -167,9 +174,20 @@
         <section class="reveal">
             <h2 class="section-title">Código de Vestimenta</h2>
             <div class="dress-code-box">
-                <div class="dress-icons" aria-hidden="true">👔 👗</div>
-                <p class="dress-label">FORMAL / ELEGANTE</p>
+                <div class="dress-icons" aria-hidden="true"><i class="fas fa-user-tie"></i><i class="fas fa-person-dress"></i></div>
+                <p class="dress-label" data-campo="vestimenta-tipo">FORMAL / ELEGANTE</p>
                 <p class="dress-sub">Te pedimos asistir con vestimenta formal para hacer de esta noche una ocasión especial</p>
+                <p class="reserved-color"><i class="fas fa-circle-exclamation" aria-hidden="true"></i> Invitadas: por favor, no usar <span data-campo="vestimenta-colores">rojo</span>. Es un color reservado para la quinceañera.</p>
+            </div>
+        </section>
+
+        <!-- Regalos -->
+        <section class="reveal">
+            <h2 class="section-title">Regalos</h2>
+            <div class="gift-box">
+                <div class="gift-icon" aria-hidden="true"><i class="fas fa-envelope-open-text"></i></div>
+                <p class="gift-label">Lluvia de Sobres</p>
+                <p class="gift-sub">Tu presencia es nuestro mejor regalo. Si deseas tener un detalle con Penélope, contaremos con lluvia de sobres.</p>
             </div>
         </section>
 
@@ -303,7 +321,8 @@
         if (opened) return;
         opened = true;
 
-        // 1. Animate envelope
+        // 1. Animate gala cover
+        screen.classList.add('opening');
         envelope.classList.add('opening');
 
         // 2. Start music after brief delay (user gesture already captured)
@@ -315,6 +334,7 @@
 
         // 3. Show invitation
         setTimeout(() => {
+            document.body.classList.add('invitation-open');
             invitation.classList.add('visible');
             startCountdown();
             initReveal();
@@ -489,6 +509,6 @@
     <script src="js/rsvp-guest.js?v=3"></script>
 <script src="js/foro7-footer.js?v=1"></script>
 <script>window.EVENTO_SLUG='xv-anos-penelope-gutierrez';</script>
-<script src="js/evento-loader.js?v=1"></script>
+<script src="js/evento-loader.js?v=2"></script>
 </body>
 </html>
