@@ -13,7 +13,7 @@
     async function loadGuest() {
         try {
             const r = await fetch(
-                `${SB_URL}/rest/v1/invitados?token=eq.${encodeURIComponent(token)}&select=id,nombre,pases_asignados,status,asiste,pases_confirmados,mensaje&limit=1`,
+                `${SB_URL}/rest/v1/invitados?token=eq.${encodeURIComponent(token)}&select=id,nombre,pases_asignados,mesa_asignada,status,asiste,pases_confirmados,mensaje&limit=1`,
                 { headers: SB_H }
             );
             const rows = await r.json();
@@ -90,6 +90,7 @@
         const section = document.getElementById('personalizedWelcome');
         const textEl = document.getElementById('guestWelcomeText');
         const pasesEl = document.getElementById('guestPassesText');
+        const mesaEl = document.getElementById('guestTableText');
         if (section && textEl && pasesEl) {
             if (!g.pases_asignados) {
                 textEl.textContent = `${g.nombre}, estas cordialmente invitado(a)`;
@@ -103,6 +104,13 @@
             } else {
                 textEl.textContent = `${g.nombre}, estas cordialmente invitado(a)`;
                 pasesEl.innerHTML = `🎟 ${g.pases_asignados} pase`;
+            }
+            if (mesaEl && g.mesa_asignada) {
+                const mesa = /^mesa\b/i.test(g.mesa_asignada.trim())
+                    ? g.mesa_asignada.trim()
+                    : `Mesa ${g.mesa_asignada.trim()}`;
+                mesaEl.textContent = `📍 ${mesa}`;
+                mesaEl.style.display = 'block';
             }
             section.style.display = 'block';
         }
@@ -154,6 +162,9 @@
         const acompNames = acompsData.map(a => a.nombre).filter(Boolean);
         const nombresHtml = acompNames.length
             ? `<p style="color:#aaa;font-size:.9rem;margin-top:8px;">Asistentes: ${g.nombre}, ${acompNames.join(', ')}</p>` : '';
+        const mesaHtml = g.mesa_asignada
+            ? `<p style="color:var(--gold,#d4af37);font-weight:700;font-size:1rem;margin-top:12px;">📍 ${/^mesa\b/i.test(g.mesa_asignada.trim()) ? g.mesa_asignada.trim() : `Mesa ${g.mesa_asignada.trim()}`}</p>`
+            : '';
 
         const form = document.getElementById('rsvpForm');
         if (!form) return;
@@ -170,6 +181,7 @@
                 ${asiste ? `Te esperamos con ${g.pases_confirmados || g.pases_asignados} lugares reservados.` : 'Lamentamos que no puedas acompanarnos.'}
             </p>
             ${nombresHtml}
+            ${mesaHtml}
             <button id="btnModificar" style="margin-top:18px;padding:10px 28px;border-radius:20px;border:1px solid var(--gold,#d4af37);background:transparent;color:var(--gold,#d4af37);cursor:pointer;font-size:.9rem;">Modificar confirmacion</button>`;
         form.parentNode.insertBefore(div, form);
         div.querySelector('#btnModificar').addEventListener('click', function () {

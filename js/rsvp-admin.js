@@ -87,7 +87,10 @@
             ? (acompNombres.length ? `\n\nAcompanantes registrados: ${acompNombres.join(', ')}` : '')
             : '';
         const pasesText = !g.pases_asignados ? 'pases libres' : `${g.pases_asignados} ${g.pases_asignados === 1 ? 'pase' : 'pases'}`;
-        const msg = `Hola ${g.nombre}\n\nTe invitamos a *${evName}*${evDate}.\n\n${link}\n\nTienes *${pasesText}*.${extra}\n\nConfirma desde el enlace.`;
+        const mesaText = g.mesa_asignada
+            ? `\nTu mesa asignada es: *${/^mesa\b/i.test(g.mesa_asignada.trim()) ? g.mesa_asignada.trim() : `Mesa ${g.mesa_asignada.trim()}`}*.`
+            : '';
+        const msg = `Hola ${g.nombre}\n\nTe invitamos a *${evName}*${evDate}.\n\n${link}\n\nTienes *${pasesText}*.${extra}${mesaText}\n\nConfirma desde el enlace.`;
 
         await fetch(`${SB_URL}/rest/v1/invitados?id=eq.${id}`, {
             method: 'PATCH', headers: { ...SB_H, 'Prefer': 'return=minimal' },
