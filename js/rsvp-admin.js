@@ -37,34 +37,54 @@
     }
 
     // ── Guardar invitado + acompanantes ──────────────────────────────────────
+    async function assertSupabaseOk(response, action) {
+        if (response.ok) return response;
+        let detail = '';
+        try {
+            const payload = await response.json();
+            detail = payload.message || payload.details || payload.hint || payload.error || '';
+        } catch (_) {
+            detail = await response.text().catch(() => '');
+        }
+        throw new Error(`${action} (${response.status})${detail ? `: ${detail}` : ''}`);
+    }
+
     async function saveGuest(data, nombresAcomp) {
         const eid = await getEventoId();
+        if (!eid) throw new Error('No se encontró el evento en Supabase.');
+
         let guestId;
         if (editingId) {
-            await fetch(`${SB_URL}/rest/v1/invitados?id=eq.${editingId}`, {
+            const updateResponse = await fetch(`${SB_URL}/rest/v1/invitados?id=eq.${editingId}`, {
                 method: 'PATCH', headers: { ...SB_H, 'Prefer': 'return=minimal' },
                 body: JSON.stringify(data)
             });
+            await assertSupabaseOk(updateResponse, 'No se pudo actualizar el invitado');
             guestId = editingId;
             // Borrar acompanantes viejos y recrear
-            await fetch(`${SB_URL}/rest/v1/acompanantes?invitado_id=eq.${guestId}`, {
+            const deleteResponse = await fetch(`${SB_URL}/rest/v1/acompanantes?invitado_id=eq.${guestId}`, {
                 method: 'DELETE', headers: SB_H
             });
+            await assertSupabaseOk(deleteResponse, 'No se pudieron actualizar los acompañantes');
         } else {
             const r = await fetch(`${SB_URL}/rest/v1/invitados`, {
                 method: 'POST', headers: { ...SB_H, 'Prefer': 'return=representation' },
                 body: JSON.stringify({ evento_id: eid, ...data })
             });
+            await assertSupabaseOk(r, 'No se pudo guardar el invitado');
             const created = await r.json();
-            guestId = created[0].id;
+            guestId = created[0]?.id;
+            if (!guestId) throw new Error('Supabase no devolvió el identificador del invitado.');
         }
         // Insertar acompanantes
-        if (nombresAcomp.length) {
-            const rows = nombresAcomp.map((n, i) => ({ invitado_id: guestId, nombre: n, orden: i }));
-            await fetch(`${SB_URL}/rest/v1/acompanantes`, {
+        const nombresValidos = nombresAcomp.map(n => n.trim()).filter(Boolean);
+        if (nombresValidos.length) {
+            const rows = nombresValidos.map((n, i) => ({ invitado_id: guestId, nombre: n, orden: i }));
+            const companionResponse = await fetch(`${SB_URL}/rest/v1/acompanantes`, {
                 method: 'POST', headers: { ...SB_H, 'Prefer': 'return=minimal' },
                 body: JSON.stringify(rows)
             });
+            await assertSupabaseOk(companionResponse, 'No se pudieron guardar los acompañantes');
         }
         await loadGuests();
     }
@@ -380,10 +400,16 @@
                     .map(a => a.nombre); // guardamos todos, incluso vacios
                 const btn = form.querySelector('.btn-save');
                 if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...'; }
-                await saveGuest(data, nombresAcomp);
-                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Guardar Invitado'; }
-                closeGuestModal();
-                showToast('✓ Invitado guardado');
+                try {
+                    await saveGuest(data, nombresAcomp);
+                    closeGuestModal();
+                    showToast('✓ Invitado guardado');
+                } catch (error) {
+                    console.error('Error al guardar invitado:', error);
+                    showError(error.message || 'No se pudo guardar el invitado.');
+                } finally {
+                    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Guardar Invitado'; }
+                }
             });
         }
 
