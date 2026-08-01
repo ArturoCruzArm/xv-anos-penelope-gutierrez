@@ -517,6 +517,17 @@ body {
 .card-corner-br { right: 22px; bottom: 22px; border-right: 1px solid; border-bottom: 1px solid; }
 
 /* ─── Floating Music Button ─────────────────────────────── */
+#youtube-player {
+    position: fixed;
+    width: 1px;
+    height: 1px;
+    left: -10px;
+    bottom: -10px;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: .01;
+}
+
 #music-btn {
     position: fixed;
     bottom: 28px;

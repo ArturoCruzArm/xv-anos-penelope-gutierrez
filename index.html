@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/brands.min.css">
-    <link rel="stylesheet" href="css/index.css?v=7">
+    <link rel="stylesheet" href="css/index.css?v=8">
 
 </head>
 <body>
@@ -43,9 +43,8 @@
 </div>
 
 <!-- ─── Audio ────────────────────────────────────────────────── -->
-<audio id="bgMusic" loop preload="none">
-    <source src="audio/Penélope Desirée Gutiérrez.mp3" type="audio/mpeg">
-</audio>
+<div id="youtube-player" aria-hidden="true"></div>
+<script defer src="https://www.youtube.com/iframe_api"></script>
 
 <!-- ─── Music button ─────────────────────────────────────────── -->
 <button id="music-btn" aria-label="Pausar música">
@@ -315,8 +314,50 @@
     const invitation = document.getElementById('invitation');
     const musicBtn   = document.getElementById('music-btn');
     const musicIcon  = document.getElementById('music-icon');
-    const audio      = document.getElementById('bgMusic');
+    let youtubePlayer;
+    let youtubeReady = false;
+    let musicRequested = false;
     let opened = false;
+
+    window.onYouTubeIframeAPIReady = function () {
+        youtubePlayer = new YT.Player('youtube-player', {
+            height: '1',
+            width: '1',
+            videoId: 'lY5V4hSLWY8',
+            playerVars: {
+                autoplay: 0,
+                controls: 0,
+                disablekb: 1,
+                loop: 1,
+                playlist: 'lY5V4hSLWY8',
+                playsinline: 1,
+                rel: 0
+            },
+            events: {
+                onReady(event) {
+                    youtubeReady = true;
+                    event.target.setVolume(58);
+                    if (musicRequested) event.target.playVideo();
+                },
+                onStateChange(event) {
+                    const playing = event.data === YT.PlayerState.PLAYING;
+                    musicBtn.classList.toggle('playing', playing);
+                    musicIcon.className = playing ? 'fas fa-pause' : 'fas fa-music';
+                    musicBtn.setAttribute('aria-label', playing ? 'Pausar música' : 'Reanudar música');
+                }
+            }
+        });
+    };
+
+    function playMusic() {
+        musicRequested = true;
+        if (youtubeReady) youtubePlayer.playVideo();
+    }
+
+    function pauseMusic() {
+        musicRequested = false;
+        if (youtubeReady) youtubePlayer.pauseVideo();
+    }
 
     function openEnvelope() {
         if (opened) return;
@@ -326,12 +367,9 @@
         screen.classList.add('opening');
         envelope.classList.add('opening');
 
-        // 2. Start music after brief delay (user gesture already captured)
-        setTimeout(() => {
-            audio.play().catch(() => {});
-            musicBtn.classList.add('visible', 'playing');
-            musicBtn.setAttribute('aria-label', 'Pausar música');
-        }, 400);
+        // 2. Start the selected song from the same user gesture
+        playMusic();
+        musicBtn.classList.add('visible');
 
         // 3. Show invitation
         setTimeout(() => {
@@ -352,16 +390,10 @@
 
     /* ── Music button ─────────────────────────────────────── */
     musicBtn.addEventListener('click', () => {
-        if (audio.paused) {
-            audio.play().catch(() => {});
-            musicBtn.classList.add('playing');
-            musicIcon.className = 'fas fa-pause';
-            musicBtn.setAttribute('aria-label', 'Pausar música');
+        if (!youtubeReady || youtubePlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
+            playMusic();
         } else {
-            audio.pause();
-            musicBtn.classList.remove('playing');
-            musicIcon.className = 'fas fa-music';
-            musicBtn.setAttribute('aria-label', 'Reanudar música');
+            pauseMusic();
         }
     });
 
