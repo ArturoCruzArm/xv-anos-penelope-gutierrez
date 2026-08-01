@@ -198,7 +198,7 @@
         <section class="reveal" id="rsvp-section">
             <h2 class="section-title">Confirmar Asistencia</h2>
             <p style="text-align:center; color:var(--purple-light); margin-bottom:28px; font-size:1rem;">
-                Nos encantaría contarte entre los asistentes.<br>Confirma tu asistencia antes del <strong style="color:var(--gold);">6 de septiembre de 2026</strong>.
+                Nos encantaría contarte entre los asistentes.<br>Confirma tu asistencia antes del <strong style="color:var(--gold);">25 de agosto de 2026</strong>.
             </p>
 
             <div id="personalizedWelcome" style="display:none;text-align:center;margin-bottom:20px;padding:16px;background:rgba(255,255,255,0.07);border-radius:12px;">
@@ -244,17 +244,6 @@
                 <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
                     <a id="waBtnPenelope" href="#" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:#25d366;color:#fff;padding:10px 22px;border-radius:25px;text-decoration:none;font-weight:bold;">💬 WhatsApp</a>
                 </div>
-            </div>
-        </section>
-
-        <!-- Compartir -->
-        <section class="reveal" style="text-align:center;">
-            <h2 class="section-title">Comparte</h2>
-            <p style="color:var(--purple-light); margin-bottom:8px;">Ayúdame a compartir esta invitación</p>
-            <div class="social-icons">
-                <button class="social-icon" onclick="shareWhatsApp()" aria-label="Compartir por WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></button>
-                <button class="social-icon" onclick="shareFacebook()" aria-label="Compartir en Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></button>
-                <button class="social-icon" onclick="copyLink()" aria-label="Copiar enlace"><i class="fas fa-link" aria-hidden="true"></i></button>
             </div>
         </section>
 
@@ -517,23 +506,6 @@
     }
 
     /* ── Social share ─────────────────────────────────────── */
-    window.shareWhatsApp = function () {
-        const text = '¡Estás invitado a los XV años de Penélope Desirée Gutiérrez! — Domingo 13 de Septiembre de 2026';
-        window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + location.href), '_blank');
-    };
-
-    window.shareFacebook = function () {
-        window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(location.href), '_blank');
-    };
-
-    window.copyLink = function () {
-        navigator.clipboard.writeText(location.href).then(() => {
-            alert('¡Enlace copiado!');
-        }).catch(() => {
-            prompt('Copia este enlace:', location.href);
-        });
-    };
-
     /* ── Service Worker ───────────────────────────────────── */
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js').catch(() => {});
