@@ -10,6 +10,16 @@
     let guestData = null;
     let acompsData = [];
 
+    function getMaxPases() {
+        const asignados = Number.parseInt(guestData?.pases_asignados, 10);
+        return Number.isFinite(asignados) && asignados > 0 ? asignados : 20;
+    }
+
+    function normalizePases(value) {
+        const parsed = Number.parseInt(value, 10);
+        return Math.min(Math.max(Number.isFinite(parsed) ? parsed : 1, 1), getMaxPases());
+    }
+
     async function loadGuest() {
         try {
             const r = await fetch(
@@ -122,7 +132,7 @@
         // Configurar input de pases (0 o null = libre hasta 20)
         const guestsInput = document.getElementById('guests');
         const libre = !g.pases_asignados;
-        const maxPases = libre ? 20 : g.pases_asignados;
+        const maxPases = getMaxPases();
         if (guestsInput) {
             if (guestsInput.tagName === 'SELECT') {
                 guestsInput.innerHTML = '';
@@ -137,8 +147,15 @@
                 guestsInput.value = libre ? 1 : maxPases;
             }
             const existingNames = acompsData.map(a => a.nombre);
-            guestsInput.addEventListener('change', function () { buildNombreInputs(parseInt(this.value) || 1, existingNames); });
-            guestsInput.addEventListener('input', function () { buildNombreInputs(parseInt(this.value) || 1, existingNames); });
+            const enforcePassLimit = function () {
+                const requested = Number.parseInt(this.value, 10);
+                const normalized = normalizePases(this.value);
+                if (requested !== normalized) this.value = normalized;
+                this.setCustomValidity('');
+                buildNombreInputs(normalized, existingNames);
+            };
+            guestsInput.addEventListener('change', enforcePassLimit);
+            guestsInput.addEventListener('input', enforcePassLimit);
             buildNombreInputs(libre ? 1 : maxPases, existingNames);
         }
 
@@ -205,12 +222,22 @@
         form.addEventListener('submit', async function (e) {
             e.preventDefault();
             const nombre = (document.getElementById('name')?.value || '').trim();
-            const pases = parseInt(document.getElementById('guests')?.value || '1');
+            const guestsInput = document.getElementById('guests');
+            const requestedPases = Number.parseInt(guestsInput?.value || '1', 10);
+            const pases = normalizePases(requestedPases);
             const asisteSel = document.getElementById('attendance')?.value;
             const mensaje = document.getElementById('message')?.value || '';
             const nombresAcomp = Array.from(document.querySelectorAll('.nombre-asistente')).map(inp => inp.value.trim());
 
             if (!nombre || !asisteSel) return;
+            if (requestedPases !== pases) {
+                if (guestsInput) {
+                    guestsInput.value = pases;
+                    guestsInput.setCustomValidity(`Esta invitación permite máximo ${getMaxPases()} asistentes.`);
+                    guestsInput.reportValidity();
+                }
+                return;
+            }
             const asiste = asisteSel === 'si';
 
             const btn = form.querySelector('button[type="submit"]');
