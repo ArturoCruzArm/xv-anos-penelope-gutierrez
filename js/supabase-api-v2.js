@@ -1,6 +1,6 @@
 /* ============================================================
    CAPA DE DATOS SUPABASE — XV Años Penélope Desirée Gutiérrez
-   Usada por selector-v8.js
+   Usada por selector-v9.js
 
    PROTOCOLO (obligatorio, no cambiar a la ligera)
    -----------------------------------------------
@@ -42,9 +42,9 @@ const HEADERS  = {
 };
 
 const CODE_VERSION = 6;
-const CATS         = ['impresion', 'invitacion', 'descartada'];
+const CATS         = ['impresion', 'ampliacion', 'invitacion', 'descartada'];
 const CLOCK_KEY    = 'penelope_relojes_v1';
-const SELECT_COLS  = 'foto_index,datos,impresion,invitacion,descartada,session_id';
+const SELECT_COLS  = 'foto_index,datos,impresion,ampliacion,invitacion,descartada,session_id';
 
 /* ── Sesión ───────────────────────────────────────────────── */
 function getSessionId() {
@@ -112,7 +112,7 @@ function metaDe(row) {
 function filaASeleccion(row) {
     const base = (row.datos && Object.keys(row.datos).length)
         ? row.datos
-        : { impresion: row.impresion, invitacion: row.invitacion, descartada: row.descartada };
+        : { impresion: row.impresion, ampliacion: row.ampliacion, invitacion: row.invitacion, descartada: row.descartada };
     return normalizar(base);
 }
 
@@ -164,6 +164,7 @@ function armarFila(eid, idx, sel, clock, borrada, filename) {
         session_id:   SESSION_ID,
         foto_index:   idx,
         impresion:    datos.impresion,
+        ampliacion:   datos.ampliacion,
         invitacion:   datos.invitacion,
         descartada:   datos.descartada,
         datos:        datos,

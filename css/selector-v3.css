@@ -4,6 +4,7 @@
 :root {
 
     --color-impresion: #2196f3;
+    --color-ampliacion: #9c27b0;
     --color-invitacion: #e91e63;
     --color-descartada: #f44336;
     --color-sin-clasificar: #9e9e9e;
@@ -109,6 +110,11 @@ body {
     background: linear-gradient(135deg, rgba(33, 150, 243, 0.05), white);
 }
 
+.stat-card.ampliacion {
+    border-color: var(--color-ampliacion);
+    background: linear-gradient(135deg, rgba(156, 39, 176, 0.05), white);
+}
+
 .stat-card.invitacion {
     border-color: var(--color-invitacion);
     background: linear-gradient(135deg, rgba(233, 30, 99, 0.05), white);
@@ -191,6 +197,11 @@ body {
 .filter-impresion.active {
     background: var(--color-impresion);
     border-color: var(--color-impresion);
+}
+
+.filter-ampliacion.active {
+    background: var(--color-ampliacion);
+    border-color: var(--color-ampliacion);
 }
 
 .filter-invitacion.active {
@@ -290,6 +301,10 @@ body {
 
 .photo-card.has-impresion {
     border-color: var(--color-impresion);
+}
+
+.photo-card.has-ampliacion {
+    border-color: var(--color-ampliacion);
 }
 
 .photo-card.has-invitacion {
@@ -405,6 +420,10 @@ body {
 
 .badge-impresion {
     background: var(--color-impresion);
+}
+
+.badge-ampliacion {
+    background: var(--color-ampliacion);
 }
 
 .badge-invitacion {
@@ -616,6 +635,11 @@ body {
 .option-btn.impresion.selected {
     border-color: var(--color-impresion);
     background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), white);
+}
+
+.option-btn.ampliacion.selected {
+    border-color: var(--color-ampliacion);
+    background: linear-gradient(135deg, rgba(156, 39, 176, 0.1), white);
 }
 
 .option-btn.invitacion.selected {

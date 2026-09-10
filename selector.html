@@ -10,13 +10,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
-    <link rel="stylesheet" href="css/selector-v2.css?v=1">
+    <link rel="stylesheet" href="css/selector-v3.css?v=1">
 </head>
 <body>
     <header class="header">
         <h1 class="main-title">Penélope Desirée Gutiérrez</h1>
         <p class="subtitle">XV Años</p>
-        <p class="instructions">Selecciona las fotos para impresión (100 incluidas en tu paquete)</p>
+        <p class="instructions">Selecciona las fotos para impresión (100 incluidas en tu paquete) y la foto para ampliación 50x60 cm con marco (1 incluida)</p>
         <p id="estadoNube" style="margin:6px 0 0;font-size:.8rem;font-weight:600;color:#ef6c00;">🟡 Conectando…</p>
     </header>
 
@@ -28,6 +28,13 @@
                     <div class="stat-info">
                         <h3>Impresión</h3>
                         <span class="stat-count" id="countImpresion">0/100</span>
+                    </div>
+                </div>
+                <div class="stat-card ampliacion">
+                    <span class="stat-icon">🖼️</span>
+                    <div class="stat-info">
+                        <h3>Ampliación</h3>
+                        <span class="stat-count" id="countAmpliacion">0/1</span>
                     </div>
                 </div>
                 <div class="stat-card invitacion">
@@ -56,6 +63,7 @@
             <div class="action-buttons">
                 <button class="btn btn-filter active" id="btnFilterAll" data-filter="all">Todas</button>
                 <button class="btn btn-filter filter-impresion" id="btnFilterImpresion" data-filter="impresion">Impresión</button>
+                <button class="btn btn-filter filter-ampliacion" id="btnFilterAmpliacion" data-filter="ampliacion">Ampliación</button>
                 <button class="btn btn-filter filter-invitacion" id="btnFilterInvitacion" data-filter="invitacion">Invitación</button>
                 <button class="btn btn-filter filter-descartada" id="btnFilterDescartada" data-filter="descartada">Descartadas</button>
                 <button class="btn btn-filter filter-sin-clasificar" id="btnFilterSinClasificar" data-filter="sin-clasificar">Sin Clasificar</button>
@@ -96,6 +104,11 @@
                             <span class="option-text">Impresión (5x7)</span>
                             <span class="option-check">✓</span>
                         </button>
+                        <button class="option-btn ampliacion" data-category="ampliacion">
+                            <span class="option-icon">🖼️</span>
+                            <span class="option-text">Ampliación (50x60 cm)</span>
+                            <span class="option-check">✓</span>
+                        </button>
                         <button class="option-btn invitacion" data-category="invitacion">
                             <span class="option-icon">💌</span>
                             <span class="option-text">Para Invitación Web</span>
@@ -120,8 +133,8 @@
     <script>window.EVENT_CONFIG = { telefono: "524775629388", nombre: "Pen00e9lope Desir00e9e Guti00e9rrez", fechaEvento: new Date(2026, 8, 13, 17, 0, 0), costoFotoAdicional: 15 };</script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
     <script src="js/photos-v2.js?v=2"></script>
-    <script src="js/supabase-api.js?v=1"></script>
-    <script src="js/selector-v8.js?v=8"></script>
+    <script src="js/supabase-api-v2.js?v=2"></script>
+    <script src="js/selector-v9.js?v=9"></script>
     <script src="js/visitas.js?v=2"></script>
 <script src="js/foro7-footer.js?v=1"></script>
 </body>
