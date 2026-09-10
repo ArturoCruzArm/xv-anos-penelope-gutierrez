@@ -1,6 +1,6 @@
 /* ============================================================
    LISTADO DE FOTOS — XV Años Penélope Desirée Gutiérrez
-   Generado desde imagenes/ el 10/09/2026. 192 fotos.
+   Generado desde imagenes/ el 10/09/2026. 189 fotos.
    El ORDEN define el foto_index que se guarda en Supabase:
    NO reordenar ni borrar entradas; para agregar fotos nuevas,
    añadirlas AL FINAL del arreglo.
@@ -10,11 +10,8 @@
 window.PHOTOS_DIR       = 'imagenes/';
 window.PHOTOS_THUMB_DIR = 'imagenes/thumb/';
 window.PHOTOS = [
-    "IMG_2160.webp",
     "IMG_2160-2.webp",
-    "IMG_2161.webp",
     "IMG_2161-2.webp",
-    "IMG_2162.webp",
     "IMG_2162-2.webp",
     "IMG_2163-2.webp",
     "IMG_2164-2.webp",

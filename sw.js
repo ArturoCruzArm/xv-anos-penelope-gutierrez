@@ -1,4 +1,4 @@
-const CACHE_SHELL = 'penelope-shell-v10';
+const CACHE_SHELL = 'penelope-shell-v11';
 const CACHE_IMAGES = 'penelope-images-v1';
 
 self.addEventListener('install', event => {
@@ -10,9 +10,9 @@ self.addEventListener('install', event => {
                 './contrato.html',
                 './logistica.html',
                 './css/selector-v2.css',
-                './js/selector-v7.js',
+                './js/selector-v8.js',
                 './js/supabase-api.js',
-                './js/photos.js',
+                './js/photos-v2.js',
                 './favicon.svg',
                 './penelope.png'
             ])

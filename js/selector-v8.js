@@ -7,7 +7,7 @@ const SESSION_ID = (window.SB && SB.SESSION_ID) || 'sin-sesion';
 let sbDisponible = !!window.SB;
 
 // ========================================
-// FOTOS - js/photos.js define window.PHOTOS (nombres de archivo).
+// FOTOS - js/photos-v2.js define window.PHOTOS (nombres de archivo).
 // El índice del arreglo ES el foto_index guardado en Supabase.
 // ========================================
 const PHOTO_FILES = window.PHOTOS || [];
@@ -99,12 +99,17 @@ function persistirFoto(idx) {
 /* Sube en orden las fotos que este dispositivo tenía pendientes
    (selecciones viejas de localStorage o hechas sin conexión). */
 async function subirPendientes(indices) {
+    // Se marcan TODAS desde el principio: mientras la cola avanza puede
+    // entrar un refresco, y sin esto borraría de la pantalla las fotos
+    // que todavía no alcanzan a subir.
+    indices.forEach(i => escriturasPendientes.add(i));
     for (const idx of indices) {
         const sel = photoSelections[idx];
         try {
             if (sel && SB.tieneAlgo(sel)) await SB.guardarFoto(idx, sel, PHOTO_FILES[idx]);
             else                          await SB.borrarFoto(idx);
         } catch (e) { console.warn('[Supabase] pendiente ' + idx + ':', e.message); }
+        finally { escriturasPendientes.delete(idx); }
     }
 }
 

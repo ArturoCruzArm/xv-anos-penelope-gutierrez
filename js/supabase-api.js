@@ -1,6 +1,6 @@
 /* ============================================================
    CAPA DE DATOS SUPABASE — XV Años Penélope Desirée Gutiérrez
-   Usada por selector-v7.js
+   Usada por selector-v8.js
 
    PROTOCOLO (obligatorio, no cambiar a la ligera)
    -----------------------------------------------
