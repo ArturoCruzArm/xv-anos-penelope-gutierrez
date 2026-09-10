@@ -680,7 +680,8 @@ body {
 .toast.show {
     opacity: 1;
     transform: translateY(0);
-    pointer-events: all;
+    /* Sin pointer-events: el aviso NUNCA debe tapar los botones del
+       modal (Guardar/Cancelar quedan justo debajo en móvil). */
 }
 
 .toast.success {

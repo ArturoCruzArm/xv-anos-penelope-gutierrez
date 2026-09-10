@@ -1,47 +1,20 @@
 // ========================================
-// SUPABASE CONFIG - XV Años Penélope Desirée
+// SELECTOR DE FOTOS - XV Años Penélope Desirée
+// La nube vive en js/supabase-api.js (window.SB): protocolo
+// code_version 6 + reloj lógico POR FOTO + realtime.
 // ========================================
-const SUPABASE_URL     = 'https://nzpujmlienzfetqcgsxz.supabase.co';
-const SUPABASE_ANON    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56cHVqbWxpZW56ZmV0cWNnc3h6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODYzMzYsImV4cCI6MjA5MDI2MjMzNn0.xl3lsb-KYj5tVLKTnzpbsdEGoV9ySnswH4eyRuyEH1s';
-const EVENTO_SLUG      = 'xv-anos-penelope-gutierrez';
-const SB_HEADERS       = { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}`, 'Content-Type': 'application/json' };
-
-function getSessionId() {
-    const KEY = 'foro7_sid';
-    let sid = localStorage.getItem(KEY);
-    if (!sid) { sid = crypto.randomUUID(); localStorage.setItem(KEY, sid); }
-    return sid;
-}
-const SESSION_ID = getSessionId();
-let eventoIdCache = null;
-let sbDisponible  = true;
-
-async function sbGetEventoId() {
-    if (eventoIdCache) return eventoIdCache;
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/eventos?slug=eq.${EVENTO_SLUG}&select=id&limit=1`, { headers: SB_HEADERS });
-    const [ev] = await r.json();
-    eventoIdCache = ev?.id || null;
-    return eventoIdCache;
-}
-
-async function sbRegistrarVisita(pagina = 'selector') {
-    try {
-        const evento_id = await sbGetEventoId();
-        if (!evento_id) return;
-        await fetch(`${SUPABASE_URL}/rest/v1/visitas`, {
-            method: 'POST',
-            headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
-            body: JSON.stringify({ evento_id, pagina, session_id: SESSION_ID })
-        });
-    } catch(e) {}
-}
+const SESSION_ID = (window.SB && SB.SESSION_ID) || 'sin-sesion';
+let sbDisponible = !!window.SB;
 
 // ========================================
-// GLOBAL VARIABLES - XV Años Penélope Desirée
+// FOTOS - js/photos.js define window.PHOTOS (nombres de archivo).
+// El índice del arreglo ES el foto_index guardado en Supabase.
 // ========================================
-const photos = [
-    'https://raw.githubusercontent.com/ArturoCruzArm/xv-anos-penelope-gutierrez/master/penelope.png'
-];
+const PHOTO_FILES = window.PHOTOS || [];
+const DIR_FULL    = window.PHOTOS_DIR       || 'imagenes/';
+const DIR_THUMB   = window.PHOTOS_THUMB_DIR || 'imagenes/thumb/';
+const photos      = PHOTO_FILES.map(f => DIR_FULL  + f);   // resolución completa (modal)
+const thumbs      = PHOTO_FILES.map(f => DIR_THUMB + f);   // miniatura (galería)
 
 // ── Configuración del evento (único lugar para cambiar datos del contrato) ──
 const CONFIG = {
@@ -87,9 +60,62 @@ function mostrarBannerSinSeleccion() {
     document.body.insertBefore(banner, document.body.firstChild);
 }
 
+/* Guarda sólo en el navegador (respaldo instantáneo y modo offline). */
+function saveSelections() {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(photoSelections));
+    } catch(e) {
+        showToast('Error al guardar. Verifica el espacio del navegador.', 'error');
+    }
+}
+
+/* Fotos con escritura en vuelo: un refresco no debe revertirlas
+   mientras el POST viaja. */
+const escriturasPendientes = new Set();
+
+/* Sube UNA foto a Supabase (reloj lógico + verificación de escritura).
+   Nunca se manda el estado completo: así una sesión no puede pisar
+   las fotos que eligió otra. */
+function persistirFoto(idx) {
+    saveSelections();
+    if (!sbDisponible) return;
+
+    escriturasPendientes.add(idx);
+    const sel = photoSelections[idx];
+    const tarea = (sel && SB.tieneAlgo(sel))
+        ? SB.guardarFoto(idx, sel, PHOTO_FILES[idx])
+        : SB.borrarFoto(idx);
+
+    tarea.then(res => {
+        if (res === 'conflicto') showToast('Esta foto la está editando otro dispositivo', 'error');
+    }).catch(e => {
+        console.warn('[Supabase] foto ' + idx + ':', e.message);
+        showToast('Sin conexión: guardado sólo en este dispositivo', 'error');
+    }).finally(() => {
+        escriturasPendientes.delete(idx);
+    });
+}
+
+/* Sube en orden las fotos que este dispositivo tenía pendientes
+   (selecciones viejas de localStorage o hechas sin conexión). */
+async function subirPendientes(indices) {
+    for (const idx of indices) {
+        const sel = photoSelections[idx];
+        try {
+            if (sel && SB.tieneAlgo(sel)) await SB.guardarFoto(idx, sel, PHOTO_FILES[idx]);
+            else                          await SB.borrarFoto(idx);
+        } catch (e) { console.warn('[Supabase] pendiente ' + idx + ':', e.message); }
+    }
+}
+
+/* Carga desde la nube.
+   - Inicial: muestra localStorage al instante y luego fusiona FOTO POR
+     FOTO comparando el reloj local contra el remoto. Lo que este
+     dispositivo tenía y la nube no conoce, se sube.
+   - Refresco (isPoll): adopta la nube, respetando las fotos con
+     escritura en vuelo. */
 async function loadSelections(isPoll = false) {
     if (!isPoll) {
-        // Carga inicial: mostrar localStorage de inmediato (cero latencia)
         try {
             const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) photoSelections = JSON.parse(saved);
@@ -98,85 +124,152 @@ async function loadSelections(isPoll = false) {
 
     if (!sbDisponible) return;
     try {
-        const evento_id = await sbGetEventoId();
-        if (!evento_id) { sbDisponible = false; return; }
-
-        const r = await fetch(
-            `${SUPABASE_URL}/rest/v1/selecciones?evento_id=eq.${evento_id}&select=foto_index,impresion,invitacion,descartada`,
-            { headers: SB_HEADERS }
-        );
-        if (!r.ok) throw new Error(r.status);
-        const rows = await r.json();
-
-        const sbSelections = {};
-        rows.forEach(row => {
-            if (row.impresion || row.invitacion || row.descartada) {
-                sbSelections[row.foto_index] = {
-                    impresion: row.impresion,
-                    invitacion: row.invitacion,
-                    descartada: row.descartada
-                };
-            }
-        });
+        const filas = await SB.fetchFilas();      // aún no toca los relojes locales
 
         if (!isPoll) {
-            // Carga inicial: merge y migrar localStorage a Supabase para que otros lo vean
-            const merged = {...sbSelections};
-            Object.entries(photoSelections).forEach(([idx, sel]) => {
-                if (sel.impresion || sel.invitacion || sel.descartada) merged[idx] = sel;
+            const remoto = {}, relojRemoto = {};
+            filas.forEach(f => {
+                relojRemoto[f.idx] = f.clock;
+                if (!f.deleted && SB.tieneAlgo(f.sel)) remoto[f.idx] = f.sel;
             });
-            photoSelections = merged;
-            if (Object.keys(photoSelections).length > 0) {
-                sbSyncSelections().catch(e => console.warn('[Supabase] Migración:', e.message));
-            }
-            sbRegistrarVisita('selector');
-            mostrarBannerSinSeleccion();
-        } else {
-            // Polling: Supabase es la verdad compartida, reemplaza estado local
-            photoSelections = sbSelections;
-        }
 
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(photoSelections)); } catch(e) {}
-        renderGallery(); setupLazyLoad(); updateStats(); updateFilterButtons();
+            const local  = photoSelections;
+            const fusion = {};
+            const subir  = [];
+            const indices = new Set([...Object.keys(local), ...Object.keys(relojRemoto)]);
+
+            indices.forEach(k => {
+                const idx        = Number(k);
+                const selLocal   = local[k];
+                const tieneLocal = !!(selLocal && SB.tieneAlgo(selLocal));
+                const rc         = Number(relojRemoto[idx] || 0);
+                const lc         = SB.relojDe(idx);
+
+                if (lc > rc) {
+                    // Este dispositivo va adelantado: su cambio nunca llegó.
+                    if (tieneLocal) fusion[idx] = SB.normalizar(selLocal);
+                    subir.push(idx);
+                } else if (rc > 0) {
+                    // La nube manda (incluye el borrado suave: no entra a fusion).
+                    if (remoto[idx]) fusion[idx] = remoto[idx];
+                } else if (tieneLocal) {
+                    // Selección vieja, guardada antes de existir el reloj.
+                    fusion[idx] = SB.normalizar(selLocal);
+                    subir.push(idx);
+                }
+            });
+
+            photoSelections = fusion;
+            filas.forEach(f => SB.recordarReloj(f.idx, f.clock));
+
+            if (subir.length) subirPendientes(subir);
+            SB.registrarVisita('selector');
+            mostrarBannerSinSeleccion();
+            saveSelections();
+            renderGallery(); setupLazyLoad(); updateStats(); updateFilterButtons();
+        } else {
+            const nube = {};
+            filas.forEach(f => {
+                SB.recordarReloj(f.idx, f.clock);
+                if (!f.deleted && SB.tieneAlgo(f.sel)) nube[f.idx] = f.sel;
+            });
+            // Las fotos con escritura en vuelo conservan el valor local.
+            escriturasPendientes.forEach(idx => {
+                if (photoSelections[idx]) nube[idx] = photoSelections[idx];
+                else delete nube[idx];
+            });
+
+            // Sólo se repintan las tarjetas que de verdad cambiaron: así el
+            // refresco no interrumpe el scroll ni la carga de miniaturas.
+            const cambiadas = [];
+            new Set([...Object.keys(photoSelections), ...Object.keys(nube)]).forEach(k => {
+                if (!mismaSeleccion(photoSelections[k], nube[k])) cambiadas.push(Number(k));
+            });
+            if (!cambiadas.length) return;
+
+            photoSelections = nube;
+            saveSelections();
+            cambiadas.forEach(updateCard);
+            updateStats(); updateFilterButtons();
+            if (modalOpen && cambiadas.includes(currentPhotoIndex)) refrescarBotonesModal();
+        }
     } catch(e) {
         console.warn('[Supabase] Usando localStorage:', e.message);
         sbDisponible = false;
+        actualizarEstadoNube('offline');
     }
 }
 
-async function saveSelections() {
-    // 1. localStorage siempre primero
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(photoSelections));
-    } catch(e) {
-        showToast('Error al guardar. Verifica el espacio del navegador.', 'error');
+/* ========================================
+   REALTIME: cambios de otras sesiones activas
+   ======================================== */
+function aplicarCambioRemoto(c) {
+    // Nuestro propio eco: ya está aplicado en pantalla.
+    if (c.propia) return;
+
+    if (c.tipo === 'delete') {
+        // Sólo ocurre con "Limpiar Todo" (borrado duro).
+        if (photoSelections[c.idx]) {
+            delete photoSelections[c.idx];
+            saveSelections();
+            updateCard(c.idx); updateStats(); updateFilterButtons();
+        }
+        return;
     }
 
-    // 2. Sincronizar con Supabase en background (no bloqueante)
-    if (!sbDisponible) return;
-    sbSyncSelections().catch(e => { console.warn('[Supabase] Sync error:', e.message); });
+    // El reloj decide: una sesión vieja no puede revivir un estado anterior.
+    if (!c.clock || c.clock <= SB.relojDe(c.idx)) return;
+    SB.recordarReloj(c.idx, c.clock);
+
+    if (c.borrada || !SB.tieneAlgo(c.sel)) delete photoSelections[c.idx];
+    else                                   photoSelections[c.idx] = c.sel;
+
+    saveSelections();
+    updateCard(c.idx); updateStats(); updateFilterButtons();
+
+    // Si esa foto está abierta en el modal, reflejar el cambio ahí también.
+    if (modalOpen && currentPhotoIndex === c.idx) refrescarBotonesModal();
+    avisarCambioRemoto();
 }
 
-async function sbSyncSelections() {
-    const snapshot = {...photoSelections}; // snapshot BEFORE any await
-    const evento_id = await sbGetEventoId();
-    if (!evento_id) return;
+/* Vuelve a pintar los botones del modal con lo que hay en memoria. */
+function refrescarBotonesModal() {
+    const actual = photoSelections[currentPhotoIndex] || {};
+    document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.classList.toggle('selected', actual[btn.dataset.category] === true);
+    });
+}
 
-    const rows = Object.entries(snapshot).map(([idx, sel]) => ({
-        evento_id,
-        session_id:  SESSION_ID,
-        foto_index:  parseInt(idx),
-        impresion:   sel.impresion  || false,
-        invitacion:  sel.invitacion || false,
-        descartada:  sel.descartada || false,
-    }));
+let avisoTimer = null;
+function avisarCambioRemoto() {
+    clearTimeout(avisoTimer);
+    avisoTimer = setTimeout(() => showToast('Actualizado desde otro dispositivo', 'success'), 400);
+}
 
-    if (rows.length === 0) return;
+function actualizarEstadoNube(estado) {
+    const el = document.getElementById('estadoNube');
+    if (!el) return;
+    const mapa = {
+        online:  { txt: '🟢 Sincronizado en vivo', color: '#2e7d32' },
+        polling: { txt: '🟡 Sincronizado (cada 20 s)', color: '#ef6c00' },
+        offline: { txt: '🔴 Sin conexión — sólo este dispositivo', color: '#c62828' }
+    };
+    const m = mapa[estado] || mapa.polling;
+    el.textContent = m.txt;
+    el.style.color = m.color;
+}
 
-    await fetch(`${SUPABASE_URL}/rest/v1/selecciones?on_conflict=evento_id,foto_index`, {
-        method: 'POST',
-        headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-        body: JSON.stringify(rows)
+function iniciarRealtime() {
+    if (!sbDisponible) { actualizarEstadoNube('offline'); return; }
+    actualizarEstadoNube('polling');
+    SB.suscribirRealtime(aplicarCambioRemoto, estado => {
+        if (estado === 'SUBSCRIBED') {
+            actualizarEstadoNube('online');
+            loadSelections(true);          // ponerse al día tras (re)conectar
+        } else if (estado === 'CHANNEL_ERROR' || estado === 'TIMED_OUT' ||
+                   estado === 'CLOSED'        || estado === 'SIN_LIBRERIA') {
+            actualizarEstadoNube('polling');
+        }
     });
 }
 
@@ -188,15 +281,11 @@ function swipeSaveAndNext() {
         selectedCategories[btn.dataset.category] = btn.classList.contains('selected');
         if (btn.classList.contains('selected')) hasAnySelection = true;
     });
-    if (hasAnySelection) {
-        photoSelections[currentPhotoIndex] = selectedCategories;
-    } else {
-        const idx = currentPhotoIndex;
-        delete photoSelections[idx];
-        if (sbDisponible) sbDeleteSelection(idx).catch(e => console.warn('[Supabase] Delete:', e.message));
-    }
-    saveSelections();
-    updateCard(currentPhotoIndex);
+    const idx = currentPhotoIndex;
+    if (hasAnySelection) photoSelections[idx] = selectedCategories;
+    else                 delete photoSelections[idx];
+    persistirFoto(idx);
+    updateCard(idx);
     updateStats();
     updateFilterButtons();
     navigatePhoto('next');
@@ -208,8 +297,7 @@ function swipeClearAndNext() {
     const idx = currentPhotoIndex;
     if (photoSelections[idx]) {
         delete photoSelections[idx];
-        if (sbDisponible) sbDeleteSelection(idx).catch(e => console.warn('[Supabase] Delete:', e.message));
-        saveSelections();
+        persistirFoto(idx);
         updateCard(idx);
         updateStats();
         updateFilterButtons();
@@ -219,28 +307,12 @@ function swipeClearAndNext() {
     showToast('Selección quitada', 'success');
 }
 
-async function sbDeleteSelection(foto_index) {
-    const evento_id = await sbGetEventoId();
-    if (!evento_id) return;
-    await fetch(
-        `${SUPABASE_URL}/rest/v1/selecciones?evento_id=eq.${evento_id}&foto_index=eq.${foto_index}`,
-        { method: 'DELETE', headers: SB_HEADERS }
-    );
-}
-
 async function clearAllSelections() {
-    if (confirm('¿Estás seguro de que quieres borrar TODAS las selecciones? Esta acción no se puede deshacer.')) {
-        // Borrar de Supabase primero
+    if (confirm('¿Estás seguro de que quieres borrar TODAS las selecciones? Esta acción no se puede deshacer.\n\nOJO: también se borran en los demás dispositivos.')) {
+        // Borrado duro en Supabase (el trigger del reloj no aplica a DELETE)
         if (sbDisponible) {
-            try {
-                const evento_id = await sbGetEventoId();
-                if (evento_id) {
-                    await fetch(
-                        `${SUPABASE_URL}/rest/v1/selecciones?evento_id=eq.${evento_id}`,
-                        { method: 'DELETE', headers: SB_HEADERS }
-                    );
-                }
-            } catch(e) { console.warn('[Supabase] Error al borrar:', e.message); }
+            try { await SB.borrarTodas(); }
+            catch(e) { console.warn('[Supabase] Error al borrar:', e.message); }
         }
         photoSelections = {};
         try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
@@ -356,7 +428,7 @@ function renderGallery() {
         const displayNumber = `Foto ${index + 1}`;
         const mediaHTML = `
             <div class="photo-image-container">
-                <img data-src="${photo}" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 3'/%3E" alt="${displayNumber}" class="lazy-img">
+                <img data-src="${thumbs[index]}" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 3'/%3E" alt="${displayNumber}" class="lazy-img" loading="lazy" decoding="async" width="400" height="300">
             </div>
         `;
 
@@ -472,8 +544,13 @@ function openModal(index) {
     const displayNumber = `Foto ${index + 1}`;
 
     modalPhotoNumber.textContent = displayNumber;
-    document.getElementById('modalImage').src = photo;
-    document.getElementById('modalImage').alt = displayNumber;
+    const modalImg = document.getElementById('modalImage');
+    modalImg.alt = displayNumber;
+    // Miniatura al instante y foto completa en cuanto termine de bajar.
+    modalImg.src = thumbs[index];
+    const completa = new Image();
+    completa.onload = () => { if (currentPhotoIndex === index) modalImg.src = photo; };
+    completa.src = photo;
 
     const selection = photoSelections[index] || {};
     document.querySelectorAll('.option-btn').forEach(btn => {
@@ -509,22 +586,35 @@ function navigatePhoto(direction) {
     openModal(newIndex);
 }
 
+/* ¿Cambió realmente la selección? Evita escribir en la nube cada vez
+   que se pasa de foto sin tocar nada. */
+function mismaSeleccion(a, b) {
+    const A = a || {}, B = b || {};
+    return ['impresion', 'invitacion', 'descartada']
+        .every(c => !!A[c] === !!B[c]);
+}
+
+function leerBotonesModal() {
+    const sel = {};
+    let alguna = false;
+    document.querySelectorAll('.option-btn').forEach(btn => {
+        const marcado = btn.classList.contains('selected');
+        sel[btn.dataset.category] = marcado;
+        if (marcado) alguna = true;
+    });
+    return { sel, alguna };
+}
+
 function saveCurrentSelections() {
     if (currentPhotoIndex === null) return;
-    const selectedCategories = {};
-    let hasAnySelection = false;
-    document.querySelectorAll(".option-btn").forEach(btn => {
-        const category = btn.dataset.category;
-        const isSelected = btn.classList.contains("selected");
-        selectedCategories[category] = isSelected;
-        if (isSelected) hasAnySelection = true;
-    });
-    if (hasAnySelection) {
-        photoSelections[currentPhotoIndex] = selectedCategories;
-    } else {
-        delete photoSelections[currentPhotoIndex];
-    }
-    saveSelections();
+    const idx = currentPhotoIndex;
+    const { sel, alguna } = leerBotonesModal();
+    if (mismaSeleccion(photoSelections[idx], alguna ? sel : null)) return;
+
+    if (alguna) photoSelections[idx] = sel;
+    else        delete photoSelections[idx];
+    persistirFoto(idx);
+    updateCard(idx);
     updateStats();
     updateFilterButtons();
 }
@@ -576,24 +666,17 @@ function updateCard(index) {
 
 function saveModalSelection() {
     if (currentPhotoIndex === null) return;
-    const selectedCategories = {};
-    let hasAnySelection = false;
-    document.querySelectorAll('.option-btn').forEach(btn => {
-        const category = btn.dataset.category;
-        const isSelected = btn.classList.contains('selected');
-        selectedCategories[category] = isSelected;
-        if (isSelected) hasAnySelection = true;
-    });
-    if (hasAnySelection) {
-        photoSelections[currentPhotoIndex] = selectedCategories;
-    } else {
-        delete photoSelections[currentPhotoIndex];
-        if (sbDisponible) sbDeleteSelection(currentPhotoIndex).catch(e => console.warn('[Supabase] Delete:', e.message));
+    const idx = currentPhotoIndex;
+    const { sel, alguna } = leerBotonesModal();
+
+    if (!mismaSeleccion(photoSelections[idx], alguna ? sel : null)) {
+        if (alguna) photoSelections[idx] = sel;
+        else        delete photoSelections[idx];
+        persistirFoto(idx);
+        updateCard(idx);
+        updateStats();
+        updateFilterButtons();
     }
-    saveSelections();
-    updateCard(currentPhotoIndex);
-    updateStats();
-    updateFilterButtons();
     closeModal();
     showToast('Selección guardada correctamente', 'success');
 }
@@ -715,10 +798,18 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnPrevPhoto')?.addEventListener('click', () => navigatePhoto('prev'));
     document.getElementById('btnNextPhoto')?.addEventListener('click', () => navigatePhoto('next'));
 
-    // Polling: sincronizar con otros usuarios cada 30 segundos
+    // Realtime: cambios de otras sesiones activas al instante.
+    iniciarRealtime();
+
+    // Red de seguridad: si el websocket se cae o el navegador no lo
+    // soporta, un refresco periódico mantiene todo sincronizado.
     if (sbDisponible) {
-        setInterval(() => { if (!modalOpen) loadSelections(true); }, 30000);
+        setInterval(() => { loadSelections(true); }, 20000);
     }
+    // Al volver a la pestaña, ponerse al día de inmediato.
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && sbDisponible) loadSelections(true);
+    });
 
     document.addEventListener('keydown', (e) => {
         const modal = document.getElementById('photoModal');
@@ -780,7 +871,7 @@ async function downloadCurrentPhoto() {
         a.href = objUrl; a.download = filename;
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
         setTimeout(function(){ URL.revokeObjectURL(objUrl); }, 2000);
-        sbRegistrarVisita('descarga');
+        if (sbDisponible) SB.registrarVisita('descarga');
         showToast('Descargando ' + filename, 'success');
     } catch(e) {
         window.open(url, '_blank');
