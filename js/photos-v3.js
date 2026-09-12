@@ -1,9 +1,11 @@
 /* ============================================================
    LISTADO DE FOTOS — XV Años Penélope Desirée Gutiérrez
-   Generado desde imagenes/ el 10/09/2026. 189 fotos.
+   189 fotos originales (10/09/2026) + 12 variantes agregadas al
+   final el 11/09/2026: recortes 50x60 'caida-natural' y versiones
+   'sin-retoque-adicional'. Total: 201 fotos.
    El ORDEN define el foto_index que se guarda en Supabase:
-   NO reordenar ni borrar entradas; para agregar fotos nuevas,
-   añadirlas AL FINAL del arreglo.
+   NO reordenar ni borrar entradas (la clienta ya tiene selecciones);
+   para agregar fotos nuevas, añadirlas AL FINAL del arreglo.
    Cada archivo tiene su miniatura en imagenes/thumb/ con el
    mismo nombre.
    ============================================================ */
@@ -199,4 +201,17 @@ window.PHOTOS = [
     "IMG_2348-2.webp",
     "IMG_2349-2.webp",
     "IMG_2350-2.webp",
+    // ── agregadas el 11/09/2026 ──
+    "IMG_2184-2_caida-natural_50x60.webp",
+    "IMG_2191-2_caida-natural_50x60.webp",
+    "IMG_2202-2_caida-natural_50x60.webp",
+    "IMG_2208-2_caida-natural_50x60.webp",
+    "IMG_2217-2_caida-natural_50x60.webp",
+    "IMG_2226-2_caida-natural_50x60.webp",
+    "IMG_2227-2_caida-natural_50x60.webp",
+    "IMG_2228-2_caida-natural_50x60.webp",
+    "IMG_2229-2_sin-retoque-adicional.webp",
+    "IMG_2230-2_sin-retoque-adicional.webp",
+    "IMG_2232-2_sin-retoque-adicional.webp",
+    "IMG_2346-2_caida-natural_50x60.webp",
 ];
