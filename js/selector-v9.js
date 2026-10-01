@@ -13,8 +13,12 @@ let sbDisponible = !!window.SB;
 const PHOTO_FILES = window.PHOTOS || [];
 const DIR_FULL    = window.PHOTOS_DIR       || 'imagenes/';
 const DIR_THUMB   = window.PHOTOS_THUMB_DIR || 'imagenes/thumb/';
-const photos      = PHOTO_FILES.map(f => DIR_FULL  + f);   // resolución completa (modal)
-const thumbs      = PHOTO_FILES.map(f => DIR_THUMB + f);   // miniatura (galería)
+// Una entrada con '/' es ruta completa (ej. imagenes/misa-y-fiesta/DSC_9043.webp)
+// y su miniatura vive en <carpeta>/thumb/ con el mismo nombre.
+const fullDe  = f => f.includes('/') ? f : DIR_FULL + f;
+const thumbDe = f => f.includes('/') ? f.replace(/([^/]+)$/, 'thumb/$1') : DIR_THUMB + f;
+const photos      = PHOTO_FILES.map(fullDe);    // resolución completa (modal)
+const thumbs      = PHOTO_FILES.map(thumbDe);   // miniatura (galería)
 
 // ── Configuración del evento (único lugar para cambiar datos del contrato) ──
 const CONFIG = {

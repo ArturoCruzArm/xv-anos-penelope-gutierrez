@@ -1,4 +1,4 @@
-const CACHE_SHELL = 'penelope-shell-v13';
+const CACHE_SHELL = 'penelope-shell-v14';
 const CACHE_IMAGES = 'penelope-images-v1';
 
 self.addEventListener('install', event => {
